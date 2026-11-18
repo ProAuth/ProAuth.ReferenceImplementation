@@ -1,0 +1,24 @@
+:root {
+  --proauth-primary: #235777;
+  --proauth-primary-hover: #183f59;
+  --proauth-primary-light: #e9f2f7;
+  --proauth-accent: #235777;
+  --proauth-brand-gradient-from: #234c67;
+  --proauth-brand-gradient-to: #132c3e;
+  --proauth-input-focus: #235777;
+}
+.supplier-company {
+  color: #ccdee9;
+  font-weight: 600;
+}
+.supplier-title {
+  color: white;
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  font-weight: 650;
+  line-height: 1.1;
+  margin-top: 0.65rem;
+}
+.supplier-wordmark {
+  color: #18354a;
+  font-weight: 700;
+}

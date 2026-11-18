@@ -1,0 +1,21 @@
+# Issuer-provided tenant/client context consumed by ValidatedContext and Memberships.
+# Trust these claims only after resource-server validation. They identify the caller;
+# operator-owned business assignments determine what that caller may do in Mervikon.
+apiVersion: management.proauth.net/v2
+kind: ClaimRule
+metadata:
+  id: 8aef8eff-e8bf-48e2-8fec-0771bffa6e81
+spec:
+  name: Mervikon API trusted context
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  ruleLevel: Subscription
+  ruleType: Filter
+  filterTarget: Type
+  transformTarget: Type
+  inputSource: IssuerContext
+  disclosureMode: Always
+  destination: AccessToken
+  priority: 1
+  typeEvaluationRule: ^pa_iss_(tenant|clientapp)$
+  isActive: true
+  applyToSubscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Procurement.Domain/Procurement.Domain.csproj" />
+  </ItemGroup>
+</Project>

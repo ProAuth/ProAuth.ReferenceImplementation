@@ -1,0 +1,49 @@
+<Solution>
+  <Folder Name="/labs/" />
+  <Folder Name="/labs/protocols/">
+    <Project Path="labs/protocols/Demo.Probe/Demo.Probe.csproj" />
+    <Project Path="labs/protocols/ProtocolLab.Api/ProtocolLab.Api.csproj" />
+    <Project Path="labs/protocols/ProtocolLab.Probe/ProtocolLab.Probe.csproj" />
+  </Folder>
+  <Folder Name="/labs/unsafe/">
+    <Project Path="labs/unsafe/Demo.Browser/Demo.Browser.csproj" />
+    <Project Path="labs/unsafe/Demo.Attacker/Demo.Attacker.csproj" />
+    <Project Path="labs/unsafe/SecurityLab.Api/SecurityLab.Api.csproj" />
+    <Project Path="labs/unsafe/SecurityLab.Capture/SecurityLab.Capture.csproj" />
+    <Project Path="labs/unsafe/SecurityLab.Runner/SecurityLab.Runner.csproj" />
+    <Project Path="labs/unsafe/SecurityLab.Victim/SecurityLab.Victim.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/apps/">
+    <Project Path="src/apps/FinanceDesk.Bff/FinanceDesk.Bff.csproj" />
+    <Project Path="src/apps/SupplierPortal.Bff/SupplierPortal.Bff.csproj" />
+    <Project Path="src/apps/Workplace.Bff/Workplace.Bff.csproj" />
+  </Folder>
+  <Folder Name="/src/clients/">
+    <Project Path="src/clients/Demo.MembershipSetup/Demo.MembershipSetup.csproj" />
+    <Project Path="src/clients/Group.Provisioner/Group.Provisioner.csproj" />
+    <Project Path="src/clients/Integration.Worker/Integration.Worker.csproj" />
+    <Project Path="src/clients/Warehouse.Terminal/Warehouse.Terminal.csproj" />
+  </Folder>
+  <Folder Name="/src/demo-console/">
+    <Project Path="src/demo-console/DemoConsole/DemoConsole.csproj" />
+  </Folder>
+  <Folder Name="/src/services/">
+    <Project Path="src/services/Fulfilment.Api/Fulfilment.Api.csproj" />
+    <Project Path="src/services/Procurement.Api/Procurement.Api.csproj" />
+    <Project Path="src/services/Procurement.Domain/Procurement.Domain.csproj" />
+    <Project Path="src/services/Treasury.Api/Treasury.Api.csproj" />
+    <Project Path="src/services/Workflow.Domain/Workflow.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/shared/">
+    <Project Path="src/shared/Common.Evidence/Common.Evidence.csproj" />
+    <Project Path="src/shared/Common.Security/Common.Security.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Authorization.Http.Tests/Authorization.Http.Tests.csproj" />
+    <Project Path="tests/Procurement.Domain.Tests/Procurement.Domain.Tests.csproj" />
+    <Project Path="tests/ProtocolLab.Probe.Tests/ProtocolLab.Probe.Tests.csproj" />
+    <Project Path="tests/Common.Evidence.Tests/Common.Evidence.Tests.csproj" />
+    <Project Path="tests/Workflow.Domain.Tests/Workflow.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

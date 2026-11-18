@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="600" viewBox="-15 0 1130 514" role="img" aria-labelledby="title description">
+<title id="title">ProAuth reference application architecture</title>
+<desc id="description">External ProAuth serves three browser and BFF applications: Workplace, Supplier Portal and Finance Desk. Each calls its business API: Procurement, Fulfilment or Treasury. Procurement exchanges a token at ProAuth and hands approved orders to Fulfilment. Treasury reads receipts from Fulfilment. A separate opt-in lab contains browser clients, protected APIs and capture/replay tools. Demo Console observes recorded evidence outside the request path. Workers and infrastructure are omitted.</desc>
+<!-- Static adaptation of the presentation architecture diagram; no presentation runtime required. -->
+<defs>
+  <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#0041c8"/></marker>
+  <marker id="lab-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#718096"/></marker>
+</defs>
+<style>
+  text { font-family: Arial, Helvetica, sans-serif; }
+  .group { font-size:11px; letter-spacing:1px; fill:#53647b; }
+  .title { font-size:20px; font-weight:600; fill:#001847; }
+  .detail { font-size:12px; fill:#304b73; }
+  .caption { font-size:12px; fill:#53647b; }
+  .business { fill:#edf3ff; stroke:#0041c8; stroke-width:1.7; }
+  .lab { fill:#fafbfd; stroke:#a4b3c8; stroke-width:1.2; }
+</style>
+<rect x="-15" y="0" width="1130" height="514" rx="5" fill="#ffffff"/>
+<text x="10" y="30" class="group">YOUR EXTERNAL IDENTITY PLATFORM</text>
+<text x="40" y="100" class="group">OIDC / OAUTH</text>
+<rect x="10" y="350" width="760" height="120" rx="4" fill="#f4f7fb" stroke="#c3cfe0" stroke-dasharray="5 4"/>
+<text x="28" y="374" class="group">ISOLATED, OPT-IN SECURITY LAB</text>
+<text x="790" y="374" class="group">OBSERVATION · OUTSIDE REQUEST PATH</text>
+<path d="M390 46 H160 V138" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M550 82 V138" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M710 46 H940 V138" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M160 210 V236" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M550 210 V236" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M940 210 V236" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M310 272 H400" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M790 272 H700" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M310 254 H350 V98 H470 V82" fill="none" stroke="#0041c8" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M390 66 H0 V422 H28" fill="none" stroke="#718096" stroke-width="1.8" marker-end="url(#lab-arrow)"/>
+<path d="M248 422 H280" fill="none" stroke="#718096" stroke-width="1.8" marker-end="url(#lab-arrow)"/>
+<path d="M532 422 H500" fill="none" stroke="#718096" stroke-width="1.8" marker-end="url(#lab-arrow)"/>
+<rect x="8" y="111" width="315" height="18" fill="#ffffff"/>
+<text x="10" y="124" class="group">REFERENCE BUSINESS APPLICATIONS</text>
+<text x="355" y="93" class="caption">Token exchange</text>
+<g id="identity" transform="translate(390,10)"><rect class="business" width="320" height="72" rx="4"/><text x="14" y="29" class="title">ProAuth</text><text x="14" y="52" class="detail">Authentication · token issuance · policy</text></g>
+<g id="workplace" transform="translate(10,138)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Workplace</text><text x="14" y="52" class="detail">Browser UI + BFF · buyer / approver</text></g>
+<g id="supplier" transform="translate(400,138)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Supplier Portal</text><text x="14" y="52" class="detail">Browser UI + BFF · supplier</text></g>
+<g id="finance" transform="translate(790,138)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Finance Desk</text><text x="14" y="52" class="detail">Browser UI + BFF · finance</text></g>
+<g id="procurement" transform="translate(10,236)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Procurement API</text><text x="14" y="52" class="detail">Purchase policy · approval · exchange</text></g>
+<g id="fulfilment" transform="translate(400,236)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Fulfilment API</text><text x="14" y="52" class="detail">Supplier orders · dispatch · receipt</text></g>
+<g id="treasury" transform="translate(790,236)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Treasury API</text><text x="14" y="52" class="detail">Payment instructions · release</text></g>
+<g id="browser" transform="translate(28,386)"><rect class="lab" width="220" height="72" rx="4"/><text x="14" y="29" class="title">SPA / browser BFF</text><text x="14" y="52" class="detail">Same quote UI, two clients</text></g>
+<g id="quote" transform="translate(280,386)"><rect class="lab" width="220" height="72" rx="4"/><text x="14" y="29" class="title">Lab / protocol APIs</text><text x="14" y="52" class="detail">Audience · token · sender controls</text></g>
+<g id="attack" transform="translate(532,386)"><rect class="lab" width="220" height="72" rx="4"/><text x="14" y="29" class="title">Capture + attacker</text><text x="14" y="52" class="detail">Controlled theft and replay</text></g>
+<g id="console" transform="translate(790,386)"><rect class="business" width="300" height="72" rx="4"/><text x="14" y="29" class="title">Demo Console</text><text x="14" y="52" class="detail">Sanitized observations · evidence viewer</text></g>
+<text x="320" y="301" class="caption">Handoff</text>
+<text x="708" y="301" class="caption">Read receipts</text>
+<text x="10" y="497" class="caption">Logical component overview · business workers, Redis, proxies and deployment infrastructure omitted.</text>
+</svg>

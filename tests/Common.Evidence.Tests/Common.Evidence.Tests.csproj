@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <PackageReference Include="ProAuth.Bff" />
+    <PackageReference Include="ProAuth.Oidc.Client.InMemory" />
+    <ProjectReference Include="../../src/apps/Workplace.Bff/Workplace.Bff.csproj" />
+    <ProjectReference Include="../../src/shared/Common.Evidence/Common.Evidence.csproj" />
+  </ItemGroup>
+</Project>

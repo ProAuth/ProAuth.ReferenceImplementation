@@ -1,0 +1,22 @@
+.git
+.idea
+.local
+**/bin
+**/obj
+**/node_modules
+**/wwwroot
+**/TestResults
+**/.env
+**/.env.*
+**/*.env
+**/*.pfx
+**/*.key
+**/*.secret
+.playwright-cli
+output
+artifacts
+!labs/unsafe/Demo.Browser/wwwroot
+!labs/unsafe/Demo.Browser/wwwroot/**
+
+# Recording sources, media and private virtual-authenticator state are not application build inputs.
+.demoautomation

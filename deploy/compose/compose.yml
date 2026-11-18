@@ -1,0 +1,420 @@
+name: ${COMPOSE_PROJECT_NAME:-mervikon}
+services:
+  workplace-bff:
+    image: mervikon/workplace-bff:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: bff
+      secrets:
+        - proauthfeed
+        - trustedca
+    environment:
+      AllowedHosts: ${WORKPLACE_HOST:?Set WORKPLACE_HOST}
+      ProAuthBff__AuthenticationSettings__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      ProAuthBff__AuthenticationSettings__Dpop__JsonWebKey: ${WORKPLACE_DPOP_JWK:?Run generate-keys}
+      ProAuthBff__AuthenticationSettings__ClientId: ${WORKPLACE_CLIENT_ID:?Set WORKPLACE_CLIENT_ID}
+      ProAuthBff__AuthenticationSettings__ClientSecret: ${WORKPLACE_CLIENT_SECRET:?Set WORKPLACE_CLIENT_SECRET}
+      ProAuthBff__AuthenticationSettings__TenantId: ${WORKFORCE_TENANT_ID:?Set WORKFORCE_TENANT_ID}
+      ProAuthBff__ForwardedHeaders__KnownProxies: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__Certificate: ${DATA_PROTECTION_CERTIFICATE:?Run generate-keys}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__CertificatePassword: ${DATA_PROTECTION_PASSWORD:?Run generate-keys}
+      ProAuthBff__Routes__0__Destination: ${PROCUREMENT_ORIGIN:?Set PROCUREMENT_ORIGIN}
+    extra_hosts:
+      - ${PROCUREMENT_HOST}:host-gateway
+    networks:
+      - edge
+      - state
+    depends_on:
+      mervikon-redis:
+        condition: service_healthy
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK:?Set MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-workplace.rule: Host(`${WORKPLACE_HOST}`)
+      traefik.http.routers.mervikon-workplace.entrypoints: websecure
+      traefik.http.routers.mervikon-workplace.tls: "true"
+      traefik.http.services.mervikon-workplace.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  procurement-api:
+    image: mervikon/procurement-api:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: api
+      args:
+        PROJECT: src/services/Procurement.Api/Procurement.Api.csproj
+      secrets:
+        - proauthfeed
+        - trustedca
+    environment:
+      AllowedHosts: ${PROCUREMENT_HOST:?Set PROCUREMENT_HOST}
+      ResourceServer__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      MembershipFile: /run/mervikon/memberships.json
+      FulfilmentOrigin: ${FULFILMENT_ORIGIN}
+      OutboundAuthentication__Authority: ${PROAUTH_ISSUER}
+      OutboundAuthentication__Dpop__JsonWebKey: ${PROCUREMENT_DPOP_JWK:?Run generate-keys}
+      OutboundAuthentication__ClientId: ${PROCUREMENT_EXCHANGE_CLIENT_ID}
+      OutboundAuthentication__ClientSecret: ${PROCUREMENT_EXCHANGE_CLIENT_SECRET}
+      OutboundAuthentication__TenantId: ${WORKFORCE_TENANT_ID}
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY:?Run configure-workflows}
+    volumes:
+      - ${ENTITLEMENT_DIR:?Set ENTITLEMENT_DIR to a dedicated entitlement directory}:/run/mervikon:ro
+    networks:
+      - edge
+      - evidence
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-procurement.rule: Host(`${PROCUREMENT_HOST}`)
+      traefik.http.routers.mervikon-procurement.entrypoints: websecure
+      traefik.http.routers.mervikon-procurement.tls: "true"
+      traefik.http.services.mervikon-procurement.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    extra_hosts:
+      - ${FULFILMENT_HOST}:host-gateway
+  mervikon-redis:
+    image: ${REDIS_IMAGE:-redis:8.2.11-alpine}
+    command:
+      - redis-server
+      - --appendonly
+      - yes
+    networks:
+      - state
+    volumes:
+      - mervikon-state:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    security_opt:
+      - no-new-privileges:true
+  supplier-bff:
+    image: mervikon/supplier-bff:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: bff
+      secrets:
+        - proauthfeed
+        - trustedca
+      args:
+        PROJECT: src/apps/SupplierPortal.Bff/SupplierPortal.Bff.csproj
+        APP: SupplierPortal
+    environment:
+      AllowedHosts: ${SUPPLIER_HOST:?Set SUPPLIER_HOST}
+      ProAuthBff__AuthenticationSettings__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      ProAuthBff__AuthenticationSettings__ClientId: ${SUPPLIER_CLIENT_ID:?Set client ID}
+      ProAuthBff__AuthenticationSettings__ClientSecret: ${SUPPLIER_CLIENT_SECRET:?Set client secret}
+      ProAuthBff__AuthenticationSettings__TenantId: ${PARTNERS_TENANT_ID}
+      ProAuthBff__ForwardedHeaders__KnownProxies: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__Certificate: ${SUPPLIER_DATA_PROTECTION_CERTIFICATE:?Run generate-keys}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__CertificatePassword: ${SUPPLIER_DATA_PROTECTION_PASSWORD:?Run generate-keys}
+      ProAuthBff__Routes__0__Destination: ${FULFILMENT_ORIGIN}
+    extra_hosts:
+      - ${FULFILMENT_HOST}:host-gateway
+    networks:
+      - edge
+      - state
+    depends_on:
+      mervikon-redis:
+        condition: service_healthy
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK:?Set MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-supplier.rule: Host(`${SUPPLIER_HOST}`)
+      traefik.http.routers.mervikon-supplier.entrypoints: websecure
+      traefik.http.routers.mervikon-supplier.tls: "true"
+      traefik.http.services.mervikon-supplier.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    command:
+      - SupplierPortal.Bff.dll
+  finance-bff:
+    image: mervikon/finance-bff:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: bff
+      secrets:
+        - proauthfeed
+        - trustedca
+      args:
+        PROJECT: src/apps/FinanceDesk.Bff/FinanceDesk.Bff.csproj
+        APP: FinanceDesk
+    environment:
+      AllowedHosts: ${FINANCE_HOST:?Set FINANCE_HOST}
+      ProAuthBff__AuthenticationSettings__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      ProAuthBff__AuthenticationSettings__ClientId: ${FINANCE_CLIENT_ID:?Set client ID}
+      ProAuthBff__AuthenticationSettings__TenantId: ${WORKFORCE_TENANT_ID}
+      ProAuthBff__ForwardedHeaders__KnownProxies: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__Certificate: ${FINANCE_DATA_PROTECTION_CERTIFICATE:?Run generate-keys}
+      ProAuthBff__DataProtectionSettings__EncryptionKeys__CertificatePassword: ${FINANCE_DATA_PROTECTION_PASSWORD:?Run generate-keys}
+      ProAuthBff__Routes__0__Destination: ${TREASURY_ORIGIN}
+      ProAuthBff__AuthenticationSettings__Dpop__JsonWebKey: ${FINANCE_DPOP_JWK:?Run generate-keys}
+      ProAuthBff__AuthenticationSettings__ClientAssertion__Certificate: ${FINANCE_ASSERTION_CERTIFICATE:?Run generate-keys}
+      ProAuthBff__AuthenticationSettings__ClientAssertion__CertificatePassword: ${FINANCE_ASSERTION_PASSWORD:?Run generate-keys}
+    extra_hosts:
+      - ${TREASURY_HOST}:host-gateway
+    networks:
+      - edge
+      - state
+    depends_on:
+      mervikon-redis:
+        condition: service_healthy
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK:?Set MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-finance.rule: Host(`${FINANCE_HOST}`)
+      traefik.http.routers.mervikon-finance.entrypoints: websecure
+      traefik.http.routers.mervikon-finance.tls: "true"
+      traefik.http.services.mervikon-finance.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    command:
+      - FinanceDesk.Bff.dll
+  fulfilment-api:
+    image: mervikon/fulfilment-api:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: api
+      args:
+        PROJECT: src/services/Fulfilment.Api/Fulfilment.Api.csproj
+      secrets:
+        - proauthfeed
+        - trustedca
+    environment:
+      AllowedHosts: ${FULFILMENT_HOST}
+      ResourceServer__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      MembershipFile: /run/mervikon/memberships.json
+      ProcurementExchangeClientId: ${PROCUREMENT_EXCHANGE_CLIENT_ID}
+      WarehouseClientId: ${WAREHOUSE_CLIENT_ID}
+      SupplierClientId: ${SUPPLIER_CLIENT_ID}
+      DispatchClientId: ${DISPATCH_CLIENT_ID}
+      TreasuryReaderClientId: ${TREASURY_READER_CLIENT_ID}
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY:?Run configure-workflows}
+    volumes:
+      - ${ENTITLEMENT_DIR:?Set ENTITLEMENT_DIR to a dedicated entitlement directory}:/run/mervikon:ro
+    networks:
+      - edge
+      - evidence
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-fulfilment.rule: Host(`${FULFILMENT_HOST}`)
+      traefik.http.routers.mervikon-fulfilment.entrypoints: websecure
+      traefik.http.routers.mervikon-fulfilment.tls: "true"
+      traefik.http.services.mervikon-fulfilment.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    command:
+      - Fulfilment.Api.dll
+  treasury-api:
+    image: mervikon/treasury-api:local
+    build:
+      context: ../..
+      dockerfile: deploy/compose/Dockerfile
+      target: api
+      args:
+        PROJECT: src/services/Treasury.Api/Treasury.Api.csproj
+      secrets:
+        - proauthfeed
+        - trustedca
+    environment:
+      AllowedHosts: ${TREASURY_HOST}
+      ResourceServer__Authority: ${PROAUTH_ISSUER:?Set PROAUTH_ISSUER}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP:?Set the exact proxy IP}
+      MembershipFile: /run/mervikon/memberships.json
+      OutboundAuthentication__Authority: ${PROAUTH_ISSUER}
+      OutboundAuthentication__ClientId: ${TREASURY_READER_CLIENT_ID}
+      OutboundAuthentication__ClientSecret: ${TREASURY_READER_CLIENT_SECRET}
+      OutboundAuthentication__TenantId: ${WORKFORCE_TENANT_ID}
+      FulfilmentOrigin: ${FULFILMENT_ORIGIN}
+      FinanceClientId: ${FINANCE_CLIENT_ID}
+      ReconciliationClientId: ${RECONCILIATION_CLIENT_ID}
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY:?Run configure-workflows}
+    volumes:
+      - ${ENTITLEMENT_DIR:?Set ENTITLEMENT_DIR to a dedicated entitlement directory}:/run/mervikon:ro
+    networks:
+      - edge
+      - evidence
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-treasury.rule: Host(`${TREASURY_HOST}`)
+      traefik.http.routers.mervikon-treasury.entrypoints: websecure
+      traefik.http.routers.mervikon-treasury.tls: "true"
+      traefik.http.services.mervikon-treasury.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    command:
+      - Treasury.Api.dll
+    extra_hosts:
+      - ${FULFILMENT_HOST}:host-gateway
+  warehouse-terminal:
+    image: mervikon/warehouse-terminal:local
+    profiles:
+      - devices
+    command:
+      - Warehouse.Terminal.dll
+    environment:
+      Authentication__Authority: ${PROAUTH_ISSUER}
+      Authentication__ClientId: ${WAREHOUSE_CLIENT_ID}
+      Authentication__TenantId: ${PARTNERS_TENANT_ID}
+      Authentication__ClientAuthenticationMethod: None
+      ApiOrigin: ${FULFILMENT_ORIGIN}
+      Operation: list
+    extra_hosts:
+      - ${FULFILMENT_HOST}:host-gateway
+    networks:
+      - edge
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  dispatch-worker:
+    image: mervikon/integration-worker:local
+    profiles:
+      - workers
+    command:
+      - Integration.Worker.dll
+    environment:
+      Authentication__Authority: ${PROAUTH_ISSUER}
+      Authentication__ClientId: ${DISPATCH_CLIENT_ID}
+      Authentication__TenantId: ${PARTNERS_TENANT_ID}
+      Authentication__ClientAuthenticationMethod: ClientSecretBasic
+      ApiOrigin: ${FULFILMENT_ORIGIN}
+      WorkflowTask: dispatch
+      Authentication__ClientSecret: ${DISPATCH_CLIENT_SECRET}
+    extra_hosts:
+      - ${FULFILMENT_HOST}:host-gateway
+    networks:
+      - edge
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  reconciliation-worker:
+    image: mervikon/integration-worker:local
+    profiles:
+      - workers
+    command:
+      - Integration.Worker.dll
+    environment:
+      Authentication__Authority: ${PROAUTH_ISSUER}
+      Authentication__ClientId: ${RECONCILIATION_CLIENT_ID}
+      Authentication__TenantId: ${WORKFORCE_TENANT_ID}
+      Authentication__ClientAuthenticationMethod: ClientSecretBasic
+      ApiOrigin: ${TREASURY_ORIGIN}
+      WorkflowTask: reconcile
+      Authentication__ClientSecret: ${RECONCILIATION_CLIENT_SECRET}
+    extra_hosts:
+      - ${TREASURY_HOST}:host-gateway
+    networks:
+      - edge
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  demo-console:
+    image: mervikon/demo-console:local
+    profiles:
+      - demo
+    command:
+      - DemoConsole.dll
+    environment:
+      ViewerHost: ${DEMO_CONSOLE_HOST:-democonsole.localtest.me}
+      IngestionAddressName: demo-console-ingest
+      PublisherKey: ${EVIDENCE_PUBLISHER_KEY:?Run configure-workflows}
+      Logging__LogLevel__Default: Warning
+      LabComparisonsFile: /run/mervikon/lab-comparison.json
+      ControlComparisonsFile: /run/mervikon/control-comparisons.json
+    ports:
+      - 127.0.0.1:${DEMO_CONSOLE_PORT:-5080}:8080
+    networks:
+      edge: {}
+      evidence:
+        aliases: [demo-console-ingest]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-console.rule: Host(`${DEMO_CONSOLE_HOST:-democonsole.localtest.me}`)
+      traefik.http.routers.mervikon-console.entrypoints: websecure
+      traefik.http.routers.mervikon-console.tls: "true"
+      traefik.http.services.mervikon-console.loadbalancer.server.port: "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    volumes:
+      - ${LAB_RESULTS_FILE}:/run/mervikon/lab-comparison.json:ro
+      - ${CONTROL_RESULTS_FILE}:/run/mervikon/control-comparisons.json:ro
+networks:
+  edge:
+    external: true
+    name: ${MERVIKON_EDGE_NETWORK:?Set MERVIKON_EDGE_NETWORK}
+  state:
+    internal: true
+  evidence:
+    internal: true
+volumes:
+  mervikon-state: null
+secrets:
+  proauthfeed:
+    file: ../../.local/nuget.customer.config
+  trustedca:
+    file: ${TRUSTED_CA_FILE:?Set path to the public trusted CA bundle}

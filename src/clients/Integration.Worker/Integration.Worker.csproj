@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../shared/HttpsOrigin.cs" Link="HttpsOrigin.cs" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ProAuth.Oidc.Client" />
+    <ProjectReference Include="../../services/Workflow.Domain/Workflow.Domain.csproj" />
+  </ItemGroup>
+</Project>

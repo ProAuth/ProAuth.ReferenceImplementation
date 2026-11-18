@@ -1,0 +1,185 @@
+# Isolated protocol lab: a dedicated tenant/client set for JWT, opaque introspection
+# and mTLS comparisons. These registrations have no business workflow permissions.
+# ReferenceToken is the ProAuth name for an opaque token, not application branding.
+# Pair with labs/protocols/ProtocolLab.Api and docs/protocol-controls.md.
+apiVersion: management.proauth.net/v2
+kind: Tenant
+metadata:
+  id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Mervikon protocol controls
+  tenantKey: mervikon-protocols
+  options:
+    - name: AccessTokenLifetime
+      value: "00:01:00"
+    - name: ClientCertificateForwardingEnabled
+      value: "true"
+    - name: ClientCertificateForwardingKnownProxies
+      value: "{{env:TRUSTED_PROXY_IP}},::ffff:{{env:TRUSTED_PROXY_IP}}"
+    - name: ClientCertificateForwardingPemCertificateHeaders
+      value: X-Forwarded-Tls-Client-Cert
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: feae51f6-d0cd-45fc-b997-6d9a9be03379
+spec:
+  name: Mervikon protocol jwt
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  accessTokenType: SelfContainedJwtToken
+  resources:
+    - id: e1c34e19-b91a-4abf-be58-5ac457796b1f
+      key: urn:mervikon:protocols
+      name: protocols
+  scopes:
+    - id: 0300addb-2c74-4cbd-9f91-e1c18bc3f413
+      key: protocols.quote
+      name: protocols.quote
+  secrets:
+    - id: 0a7d242f-640f-4274-914c-ea673f687602
+      name: Protocol fixture credential
+      secret: "{{env:PROTOCOL_JWT_SECRET}}"
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: feae51f6-d0cd-45fc-b997-6d9a9be03379
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 489494a0-de2f-4bb4-8d3b-7a96617dd969
+spec:
+  name: Mervikon protocol opaque
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  accessTokenType: ReferenceToken
+  resources:
+    - id: 78f65369-c966-4c2f-9f39-196f7b10c832
+      key: urn:mervikon:protocols
+      name: protocols
+  scopes:
+    - id: 5267bab6-ef32-4038-b82f-b2f1c0cecbe7
+      key: protocols.quote
+      name: protocols.quote
+  secrets:
+    - id: ba84ee68-39a3-45f6-b461-395495b95196
+      name: Protocol fixture credential
+      secret: "{{env:PROTOCOL_OPAQUE_SECRET}}"
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 489494a0-de2f-4bb4-8d3b-7a96617dd969
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 47ff9654-ad1a-4080-acd2-7869b14a26b9
+spec:
+  name: Mervikon protocol mtls
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  accessTokenType: SelfContainedJwtToken
+  resources:
+    - id: 87e6c0e3-efdd-4f0b-aa8e-01c83ae4f805
+      key: urn:mervikon:protocols
+      name: protocols
+  scopes:
+    - id: 8a1e4b6f-8bb7-4e16-8113-9340e10d84a2
+      key: protocols.quote
+      name: protocols.quote
+  clientAppKeySets:
+    - id: 0dab1f01-3877-462b-997c-98b3d372e0e1
+      name: Mervikon mTLS key
+      sourceType: InlinePublicJwks
+      usage: SelfSignedTlsClientAuth
+      status: Active
+      jwksJson: '{{env:PROTOCOL_MTLS_PUBLIC_JWKS}}'
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 47ff9654-ad1a-4080-acd2-7869b14a26b9
+spec:
+  tokenEndpointAuthMethod: self_signed_tls_client_auth
+  requireCertificateBoundAccessTokens: true
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: cbebf4c5-ef7f-4ca9-a607-f11428b2cd17
+spec:
+  name: Mervikon protocol introspection
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  accessTokenType: SelfContainedJwtToken
+  resources:
+    - id: 3bc2c98c-a5f9-41a7-b0f5-98b57c6f238b
+      key: urn:mervikon:protocols
+      name: protocols
+  scopes:
+    - id: 2482bb68-cac3-4bb0-a0ec-648cbf191be3
+      key: protocols.quote
+      name: protocols.quote
+  secrets:
+    - id: e501262f-a0ed-474d-9d2b-0d1240c42545
+      name: Protocol fixture credential
+      secret: "{{env:PROTOCOL_INTROSPECTION_SECRET}}"
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: cbebf4c5-ef7f-4ca9-a607-f11428b2cd17
+spec:
+  tokenEndpointAuthMethod: client_secret_basic

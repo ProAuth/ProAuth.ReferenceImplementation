@@ -1,0 +1,167 @@
+# Conference-only SPA/BFF and sender-constraint comparison clients. These allow
+# controlled negative experiments; do not copy their deliberately unsafe browser
+# setup into an application. Secure BFF examples are under src/apps.
+# INTENTIONALLY UNSAFE DEMONSTRATION. Opt-in conference registrations only.
+apiVersion: management.proauth.net/v2
+kind: Tenant
+metadata:
+  id: f95f0322-304a-4cce-ba7e-2f64bffaf4a8
+spec:
+  name: Security Lab browser lab
+  tenantKey: mervikon-conference
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  accessGrantConsent: Inactive
+  options:
+    - name: AccessTokenLifetime
+      value: 00:03:00
+relationships:
+  idpInstances:
+    mode: set
+    refs:
+      - id: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: be9b9f75-cacc-4412-a03f-c730d914a4b8
+spec:
+  name: Security Lab spa — isolated lab
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: true
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  resources:
+    - id: 2d80288e-9d0b-43ce-a4f4-3531b2d1d93f
+      key: urn:mervikon:conference
+      name: Security Lab quote
+  scopes:
+    - id: 07901dfd-2f44-459a-98e2-7bdf5c74f74c
+      key: openid
+      name: openid
+    - id: a2c20a48-08ff-4d78-a30d-30fd7992b4e7
+      key: profile
+      name: profile
+    - id: 5e32fd4c-4f43-44c9-8373-774dfb7bc5c7
+      key: offline_access
+      name: offline_access
+    - id: 45769047-1533-4931-b4da-94a1d6fc3bf2
+      key: conference.quote
+      name: conference.quote
+  redirectUris:
+    - id: 0ae8c947-12f1-45e2-8c08-6f9ce8e102f4
+      uri: "{{env:CONFERENCE_SPA_ORIGIN}}/callback"
+      redirectType: RedirectUri
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f95f0322-304a-4cce-ba7e-2f64bffaf4a8
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: be9b9f75-cacc-4412-a03f-c730d914a4b8
+spec:
+  tokenEndpointAuthMethod: none
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: bb2ccbac-e049-4fe4-b50d-2f5ea38190bd
+spec:
+  name: Security Lab bff — isolated lab
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  resources:
+    - id: 7cd38fbd-d5e5-4788-93f7-43dc64b7bdee
+      key: urn:mervikon:conference
+      name: Security Lab quote
+  scopes:
+    - id: 680f6841-7dbc-4ef4-bb21-9d5fb58e73ba
+      key: openid
+      name: openid
+    - id: a612b5a8-ceea-465f-a18c-aa53cae24e29
+      key: profile
+      name: profile
+    - id: 5f8962cf-da34-416b-8632-1cd61c9213ed
+      key: offline_access
+      name: offline_access
+    - id: cb3f63e1-12eb-49c6-a83d-bfa7199efe4e
+      key: conference.quote
+      name: conference.quote
+  secrets:
+    - id: b1f7b5e6-33fd-4c07-9a4c-a6ab993e6c58
+      name: Dedicated security lab credential
+      secret: "{{env:CONFERENCE_BFF_SECRET}}"
+  redirectUris:
+    - id: f8b0d26b-2cfc-4007-8fc7-7fa7aea0f077
+      uri: "{{env:CONFERENCE_BFF_ORIGIN}}/signin-oidc"
+      redirectType: RedirectUri
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f95f0322-304a-4cce-ba7e-2f64bffaf4a8
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: bb2ccbac-e049-4fe4-b50d-2f5ea38190bd
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: ebcad495-a2f1-4182-8f51-277023246326
+spec:
+  name: Security Lab nonce — isolated lab
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  resources:
+    - id: 7bd190db-b663-4931-8c5b-7364330af4aa
+      key: urn:mervikon:conference
+      name: Security Lab quote
+  scopes:
+    - id: 380fb8f8-ee40-48f3-8d5f-4157a7bc522a
+      key: conference.quote
+      name: conference.quote
+  secrets:
+    - id: 61eee3e4-9609-4c4b-afa1-b515d6a4755f
+      name: Dedicated security lab credential
+      secret: "{{env:CONFERENCE_NONCE_SECRET}}"
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f95f0322-304a-4cce-ba7e-2f64bffaf4a8
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: ebcad495-a2f1-4182-8f51-277023246326
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: true
+  requireDpopNonce: true

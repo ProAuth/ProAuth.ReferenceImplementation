@@ -1,0 +1,65 @@
+# Local shared Traefik only: uses its existing strip-and-forward client-certificate middleware.
+services:
+  protocol-api:
+    image: mervikon/protocol-api:local
+    command: [ProtocolLab.Api.dll]
+    profiles: [protocols]
+    environment:
+      ResourceServer__Authority: ${PROTOCOL_ISSUER}
+      ResourceServer__Audience: urn:mervikon:protocols
+      ResourceServer__CertificateBinding__KnownProxies: ${TRUSTED_PROXY_IP},::ffff:${TRUSTED_PROXY_IP}
+      ResourceServer__CertificateBinding__ForwardedCertificateHeader: X-Forwarded-Tls-Client-Cert
+      ResourceServer__Introspection__Enabled: "true"
+      ResourceServer__Introspection__ValidateReadableTokens: "false"
+      ResourceServer__Introspection__Endpoint: ${PROTOCOL_ISSUER}/connect/introspect
+      ResourceServer__Introspection__ClientId: ${PROTOCOL_INTROSPECTION_CLIENT_ID}
+      ResourceServer__Introspection__ClientSecret: ${PROTOCOL_INTROSPECTION_SECRET}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP}
+      DecryptionJwk: ${PROTOCOL_JWE_PRIVATE_JWK}
+    networks: [edge]
+    extra_hosts:
+      - "${PROAUTH_ISSUER_HOST:-idp.localtest.me}:${TRUSTED_PROXY_IP}"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-protocol-api.rule: Host(`${PROTOCOL_HOST}`)
+      traefik.http.routers.mervikon-protocol-api.entrypoints: websecure
+      traefik.http.routers.mervikon-protocol-api.tls: "true"
+      traefik.http.routers.mervikon-protocol-api.middlewares: proauth-client-cert@file
+      traefik.http.routers.mervikon-protocol-api.service: mervikon-protocol-api
+      traefik.http.services.mervikon-protocol-api.loadbalancer.server.port: "8080"
+      # Route only our dedicated tenant path through the existing product service.
+      traefik.http.routers.mervikon-protocol-issuer.rule: Host(`${PROAUTH_ISSUER_HOST:-idp.localtest.me}`) && PathPrefix(`/mervikon-protocols/`)
+      traefik.http.routers.mervikon-protocol-issuer.entrypoints: websecure
+      traefik.http.routers.mervikon-protocol-issuer.tls: "true"
+      traefik.http.routers.mervikon-protocol-issuer.middlewares: proauth-client-cert@file
+      traefik.http.routers.mervikon-protocol-issuer.service: proauth@docker
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  protocol-probe:
+    image: mervikon/protocol-probe:local
+    command: [ProtocolLab.Probe.dll]
+    profiles: [protocols]
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      Variant: ${PROTOCOL_VARIANT:-jwt}
+      Target: ${PROTOCOL_ORIGIN}/api/quote
+      Authentication__Authority: ${PROTOCOL_ISSUER}
+      Authentication__TenantId: ${PROTOCOL_TENANT_ID}
+      Authentication__ClientId: ${PROTOCOL_SELECTED_CLIENT_ID:-${PROTOCOL_JWT_CLIENT_ID}}
+      Authentication__ClientSecret: ${PROTOCOL_SELECTED_SECRET:-${PROTOCOL_JWT_SECRET}}
+      Authentication__ClientAuthenticationMethod: ${PROTOCOL_AUTH_METHOD:-ClientSecretBasic}
+      Authentication__SenderConstrainedTokenMode: ${PROTOCOL_BINDING:-None}
+      Authentication__MutualTls__Certificate: ${PROTOCOL_SELECTED_CERTIFICATE:-}
+      Authentication__MutualTls__CertificatePassword: ${PROTOCOL_SELECTED_PASSWORD:-}
+    networks: [edge, evidence]
+    extra_hosts:
+      - "${PROAUTH_ISSUER_HOST:-idp.localtest.me}:${TRUSTED_PROXY_IP}"
+      - "${PROTOCOL_HOST}:${TRUSTED_PROXY_IP}"
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

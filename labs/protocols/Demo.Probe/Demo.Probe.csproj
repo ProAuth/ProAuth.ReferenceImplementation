@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ProAuth.Oidc.Client" />
+    <ProjectReference Include="../../../src/shared/Common.Evidence/Common.Evidence.csproj" />
+  </ItemGroup>
+</Project>

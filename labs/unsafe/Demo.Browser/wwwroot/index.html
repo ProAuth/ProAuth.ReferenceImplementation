@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Security Lab · browser token boundary</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Mervikon Security Lab</strong
+      ><span>Intentionally unsafe demonstration · local only</span>
+      <div id="account" hidden>
+        <span id="account-name"></span><a href="/bff/account/logout">Sign out</a>
+      </div>
+    </header>
+    <main>
+      <p id="mode">Loading the actual configuration…</p>
+      <h1>One quote. Two token boundaries.</h1>
+      <p>Industrial Laser Calibration Station · CHF 18,500</p>
+      <div class="action-groups">
+        <section>
+          <h2>Regular actions</h2>
+          <nav aria-label="Regular actions">
+            <button id="login">Sign in</button><button id="quote">Read quote</button
+            ><button id="refresh">Rotate refresh token</button>
+          </nav>
+        </section>
+        <section>
+          <h2>Security experiments</h2>
+          <nav aria-label="Security experiments">
+            <button id="audience">Wrong audience</button
+            ><button id="reuse">Replay old refresh token</button>
+            <button id="successor">Try current refresh token</button
+            ><button id="inspect">Check access token</button>
+            <button id="inject">Load compromised widget</button>
+          </nav>
+        </section>
+      </div>
+      <div class="observations">
+        <section>
+          <h2>Action result</h2>
+          <pre id="result" role="status">Ready after sign-in.</pre>
+        </section>
+        <section id="token-panel">
+          <h2 id="token-heading">Browser-held tokens</h2>
+          <p id="token-caption" class="caption">
+            Redacted values · SHA-256 fingerprints identify changes
+          </p>
+          <dl id="tokens"></dl>
+          <div id="browser-visibility" hidden>
+            <button id="inspect-browser">Inspect JavaScript access</button>
+            <pre id="visibility" aria-label="JavaScript visibility snapshot"></pre>
+            <p class="caption">
+              The HttpOnly session cookie is sent by the browser, but cannot be read with
+              document.cookie. Same-origin scripts can still make authenticated requests and read
+              responses.
+            </p>
+          </div>
+          <details>
+            <summary>Decoded access-token fields</summary>
+            <pre id="claims"></pre>
+          </details>
+        </section>
+      </div>
+      <details class="widget-help">
+        <summary>What does the compromised widget do?</summary>
+        <p>
+          The deliberately compromised script dependency executes in this origin, sends readable
+          OAuth tokens to the isolated collector, and makes a same-origin request. The attacker then
+          calls the API independently.
+        </p>
+      </details>
+      <footer>
+        <button id="reset">Clear this browser fixture</button>
+        <p>
+          Decoded fields are observations, not signature validation. The API and authorization
+          server make the actual decisions.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

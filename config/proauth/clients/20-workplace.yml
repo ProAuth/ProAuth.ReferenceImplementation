@@ -1,0 +1,73 @@
+# Workplace: employee browser sign-in through a confidential BFF. Code flow, PAR and
+# DPoP are configured here and in src/apps/Workplace.Bff/appsettings.json. The API
+# audience is Procurement; scopes grant capabilities, not buyer roles or spending limits.
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 77ec4815-e6d7-4740-bb46-a19146e6f77f
+spec:
+  name: Workplace
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  requirePushedAuthorizationRequests: true
+  backchannelLogoutUri: "{{env:WORKPLACE_ORIGIN}}/bff/backchannel-logout"
+  backchannelLogoutSessionRequired: true
+  secrets:
+    - id: da28881a-294a-4680-bb85-99bebecc41f6
+      name: Workplace credential
+      secret: "{{env:WORKPLACE_CLIENT_SECRET}}"
+  resources:
+    - id: 98dfee7c-a909-45fe-aae4-5c914b2f1788
+      key: urn:mervikon:procurement
+      name: Procurement API
+  scopes:
+    - id: dcaf63a2-deed-457c-8663-b940d5992490
+      key: openid
+      name: openid
+    - id: dddb736a-d579-4d52-a616-097aa855dd33
+      key: profile
+      name: profile
+    - id: 11a69cfb-4a8c-4120-b19f-07659aef1f13
+      key: offline_access
+      name: offline_access
+    - id: caf50132-3e1e-4c39-b1ae-86751b98a0ac
+      key: procurement.read
+      name: procurement.read
+    - id: e2a5f292-4cb7-4e26-adaf-497c47371488
+      key: procurement.write
+      name: procurement.write
+  redirectUris:
+    - id: e7b03ba4-5c64-4555-ac36-515d7f416cb0
+      uri: "{{env:WORKPLACE_ORIGIN}}/signin-oidc"
+      redirectType: RedirectUri
+    - id: de788813-6a19-4d71-aa19-5e3d5c5d6e4a
+      uri: "{{env:WORKPLACE_ORIGIN}}/signout-callback-oidc"
+      redirectType: LogoutRedirectUri
+  authenticationAssurancePolicies:
+    - id: a6141175-5186-46ed-90f5-69aba005f81c
+      name: assurance-workplace-procurement
+      tenantId: e428f9e9-fb58-47a6-8de4-e66f09f382df
+      audience: urn:mervikon:procurement
+      mode: StepUp
+      includeAuthenticationMethods: false
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 77ec4815-e6d7-4740-bb46-a19146e6f77f
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: true

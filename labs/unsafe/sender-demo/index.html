@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Security Lab · sender constraints</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <strong>Mervikon Security Lab</strong><span>Local execution · actual HTTP requests</span
+      ><a id="controls">Token validation &amp; replay state →</a>
+    </header>
+    <main>
+      <div class="heading">
+        <div>
+          <p class="eyebrow">SENDER CONSTRAINTS</p>
+          <h1>Who can use a stolen token?</h1>
+        </div>
+        <nav aria-label="Token variant">
+          <button data-variant="bearer">01 Bearer</button
+          ><button data-variant="dpop">02 DPoP</button><button data-variant="mtls">03 mTLS</button>
+        </nav>
+      </div>
+      <p id="context">Choose a token variant to start a fresh, isolated probe.</p>
+      <div class="flow" aria-label="Request path">
+        <span id="actor">Legitimate client</span><b>→</b><span>GET /api/quote</span><b>→</b
+        ><strong id="outcome">Not executed</strong>
+      </div>
+      <div class="workspace">
+        <section>
+          <h2>Execute the sequence</h2>
+          <div class="steps">
+            <button data-action="legitimate">
+              <b>1</b
+              ><span
+                >Call API legitimately<small>Issue a fresh token and send the request</small></span
+              >
+            </button>
+            <button data-action="capture">
+              <b>2</b
+              ><span
+                >Obtain the stolen token<small id="capture-help"
+                  >Read the actual captured request</small
+                ></span
+              >
+            </button>
+            <button data-action="replay">
+              <b>3</b
+              ><span
+                >Replay the stolen token<small
+                  >Send a new request without the sender key</small
+                ></span
+              >
+            </button>
+          </div>
+          <p id="progress" role="status">Connecting to the local operator…</p>
+          <ol id="history" aria-label="Observed requests"></ol>
+        </section>
+        <section class="inspector">
+          <div class="inspector-heading">
+            <h2>Evidence from this execution</h2>
+            <button id="inspect">Inspect token</button>
+          </div>
+          <p id="provenance">Nothing has executed yet.</p>
+          <pre id="evidence">No token or proof has been captured.</pre>
+          <p class="caption">
+            Decoded fields explain the request. The actual server response establishes acceptance.
+            Complete credentials and private keys stay inside the lab.
+          </p>
+        </section>
+      </div>
+      <p id="error" role="alert" hidden></p>
+      <footer>
+        Bearer and DPoP: compromised TLS terminator → separate attacker runner. mTLS: controlled
+        token possession → request without the client certificate.
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

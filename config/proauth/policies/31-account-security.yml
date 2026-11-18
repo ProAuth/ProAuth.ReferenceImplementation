@@ -1,0 +1,23 @@
+# Navigation to ProAuth-hosted account security, including passkey enrollment.
+# AccountSecurityLink also checks origin, path and tenant before redirecting. The
+# applications do not implement WebAuthn or infer API assurance from this URL.
+apiVersion: management.proauth.net/v2
+kind: ClaimRule
+metadata:
+  id: 41c161b2-1e32-4aa0-819e-edb0f0c2705d
+spec:
+  name: Mervikon account-security navigation
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  ruleLevel: Tenant
+  ruleType: Filter
+  filterTarget: Type
+  transformTarget: Type
+  inputSource: Pipeline
+  disclosureMode: Always
+  destination: IdentityToken
+  # Parallel selection: a later pipeline stage would discard the API context
+  # and would no longer receive the original account-navigation claim.
+  priority: 1
+  typeEvaluationRule: ^pa_account_management_url$
+  isActive: true
+  applyToTenantId: e428f9e9-fb58-47a6-8de4-e66f09f382df

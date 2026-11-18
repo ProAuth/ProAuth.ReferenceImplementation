@@ -1,0 +1,24 @@
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: 0d4337e9-a779-52a9-a322-0bdcec0987bf
+spec:
+  location: /assets/app/4cae1e8b-31bb-4b92-b59f-e0cffc95626f/supplier.css
+  mimetype: text/css
+  dataFileReference: assets/supplier/supplier.css
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: 9f9f588a-d082-58f3-983d-1d7efed6c2b0
+spec:
+  location: /Views/app/4cae1e8b-31bb-4b92-b59f-e0cffc95626f/Shared/_Head.liquid
+  dataFileReference: assets/supplier/_Head.liquid
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: e2c4a759-1fe0-58f5-9ced-facb3b9b1559
+spec:
+  location: /Views/app/4cae1e8b-31bb-4b92-b59f-e0cffc95626f/Shared/_Layout.liquid
+  dataFileReference: assets/supplier/_Layout.liquid

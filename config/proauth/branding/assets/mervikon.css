@@ -1,0 +1,5 @@
+:root { --proauth-primary:#176e76; --proauth-primary-hover:#10565e; --proauth-primary-light:#edf8f7; --proauth-accent:#176e76; --proauth-brand-gradient-from:#164c54; --proauth-brand-gradient-to:#102b36; --proauth-input-focus:#176e76; }
+.proauth-brand-logo { width: min(340px, 85%); max-height: 100px; }
+.proauth-brand-slogan { max-width: 310px; }
+.proauth-topbar-logo img { width: 205px; height: auto; }
+.proauth-footer-text { font-size: 12px; }

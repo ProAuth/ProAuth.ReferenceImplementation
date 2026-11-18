@@ -1,0 +1,190 @@
+# Opt-in local conference lab. No normal application security is weakened.
+services:
+  conference-spa:
+    profiles: &a1
+      - conference
+    networks: &a2
+      - edge
+      - evidence
+    read_only: true
+    tmpfs: &a3
+      - /tmp
+    cap_drop: &a4
+      - ALL
+    security_opt: &a5
+      - no-new-privileges:true
+    image: mervikon/conference-browser:local
+    command:
+      - Demo.Browser.dll
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      Mode: spa
+      IntrospectionClientId: ${CONFERENCE_BFF_CLIENT_ID}
+      IntrospectionClientSecret: ${CONFERENCE_BFF_SECRET}
+      Origin: ${CONFERENCE_SPA_ORIGIN}
+      Issuer: ${PROAUTH_ISSUER}
+      AttackerOrigin: ${CONFERENCE_ATTACKER_ORIGIN}
+      SpaClientId: ${CONFERENCE_SPA_CLIENT_ID}
+      TenantId: ${CONFERENCE_TENANT_ID}
+      ApiOrigin: ${CONFERENCE_API_ORIGIN}
+      WrongAudienceOrigin: ${CONFERENCE_WRONG_ORIGIN}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP}
+      AllowedHosts: ${CONFERENCE_SPA_HOST}
+      Evidence__Source: Browser SPA
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-conference-spa.rule: Host(`${CONFERENCE_SPA_HOST}`)
+      traefik.http.routers.mervikon-conference-spa.entrypoints: ${MERVIKON_LAB_ENTRYPOINT:-mervikon-lab}
+      traefik.http.routers.mervikon-conference-spa.tls: "true"
+      traefik.http.services.mervikon-conference-spa.loadbalancer.server.port: "8080"
+    extra_hosts:
+      - idp.localtest.me:${TRUSTED_PROXY_IP}
+      - ${CONFERENCE_API_HOST}:${TRUSTED_PROXY_IP}
+  conference-bff:
+    profiles: *a1
+    networks: *a2
+    read_only: true
+    tmpfs: *a3
+    cap_drop: *a4
+    security_opt: *a5
+    image: mervikon/conference-browser:local
+    command:
+      - Demo.Browser.dll
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      Mode: bff
+      Origin: ${CONFERENCE_BFF_ORIGIN}
+      Issuer: ${PROAUTH_ISSUER}
+      AttackerOrigin: ${CONFERENCE_ATTACKER_ORIGIN}
+      SpaClientId: ${CONFERENCE_SPA_CLIENT_ID}
+      TenantId: ${CONFERENCE_TENANT_ID}
+      ApiOrigin: ${CONFERENCE_API_ORIGIN}
+      WrongAudienceOrigin: ${CONFERENCE_WRONG_ORIGIN}
+      TrustedProxyIp: ${TRUSTED_PROXY_IP}
+      AllowedHosts: ${CONFERENCE_BFF_HOST}
+      Evidence__Source: Browser BFF
+      ProAuthBff__AuthenticationSettings__Authority: ${PROAUTH_ISSUER}
+      ProAuthBff__AuthenticationSettings__ClientId: ${CONFERENCE_BFF_CLIENT_ID}
+      ProAuthBff__AuthenticationSettings__ClientSecret: ${CONFERENCE_BFF_SECRET}
+      ProAuthBff__AuthenticationSettings__TenantId: ${CONFERENCE_TENANT_ID}
+      ProAuthBff__Routes__0__Destination: ${CONFERENCE_API_ORIGIN}
+      ProAuthBff__ForwardedHeaders__KnownProxies: ${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-conference-bff.rule: Host(`${CONFERENCE_BFF_HOST}`)
+      traefik.http.routers.mervikon-conference-bff.entrypoints: ${MERVIKON_LAB_ENTRYPOINT:-mervikon-lab}
+      traefik.http.routers.mervikon-conference-bff.tls: "true"
+      traefik.http.services.mervikon-conference-bff.loadbalancer.server.port: "8080"
+    extra_hosts:
+      - idp.localtest.me:${TRUSTED_PROXY_IP}
+      - ${CONFERENCE_API_HOST}:${TRUSTED_PROXY_IP}
+  conference-api:
+    profiles: *a1
+    networks: *a2
+    read_only: true
+    tmpfs: *a3
+    cap_drop: *a4
+    security_opt: *a5
+    image: mervikon/lab-api:local
+    command:
+      - SecurityLab.Api.dll
+    environment:
+      ResourceServer__Authority: ${PROAUTH_ISSUER}
+      ResourceServer__Audience: urn:mervikon:conference
+      QuoteScope: conference.quote
+      CaptureProxyIp: ${TRUSTED_PROXY_IP}
+      BrowserOrigins: ${CONFERENCE_SPA_ORIGIN};${CONFERENCE_BFF_ORIGIN}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-conference-api.rule: Host(`${CONFERENCE_API_HOST}`)
+      traefik.http.routers.mervikon-conference-api.entrypoints: ${MERVIKON_LAB_ENTRYPOINT:-mervikon-lab}
+      traefik.http.routers.mervikon-conference-api.tls: "true"
+      traefik.http.services.mervikon-conference-api.loadbalancer.server.port: "8080"
+    extra_hosts:
+      - idp.localtest.me:${TRUSTED_PROXY_IP}
+  conference-wrong:
+    profiles: *a1
+    networks: *a2
+    read_only: true
+    tmpfs: *a3
+    cap_drop: *a4
+    security_opt: *a5
+    image: mervikon/lab-api:local
+    command:
+      - SecurityLab.Api.dll
+    environment:
+      ResourceServer__Authority: ${PROAUTH_ISSUER}
+      ResourceServer__Audience: urn:mervikon:conference:other
+      QuoteScope: conference.quote
+      CaptureProxyIp: ${TRUSTED_PROXY_IP}
+      BrowserOrigins: ${CONFERENCE_SPA_ORIGIN};${CONFERENCE_BFF_ORIGIN}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-conference-wrong.rule: Host(`${CONFERENCE_WRONG_HOST}`)
+      traefik.http.routers.mervikon-conference-wrong.entrypoints: ${MERVIKON_LAB_ENTRYPOINT:-mervikon-lab}
+      traefik.http.routers.mervikon-conference-wrong.tls: "true"
+      traefik.http.services.mervikon-conference-wrong.loadbalancer.server.port: "8080"
+    extra_hosts:
+      - idp.localtest.me:${TRUSTED_PROXY_IP}
+  conference-attacker:
+    profiles: *a1
+    networks: *a2
+    read_only: true
+    tmpfs: *a3
+    cap_drop: *a4
+    security_opt: *a5
+    image: mervikon/conference-attacker:local
+    command:
+      - Demo.Attacker.dll
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      SpaOrigin: ${CONFERENCE_SPA_ORIGIN}
+      BffOrigin: ${CONFERENCE_BFF_ORIGIN}
+      Target: ${CONFERENCE_API_ORIGIN}/api/quote
+      Issuer: ${PROAUTH_ISSUER}
+      SpaClientId: ${CONFERENCE_SPA_CLIENT_ID}
+      AllowedHosts: ${CONFERENCE_ATTACKER_HOST}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-conference-attacker.rule: Host(`${CONFERENCE_ATTACKER_HOST}`)
+      traefik.http.routers.mervikon-conference-attacker.entrypoints: ${MERVIKON_LAB_ENTRYPOINT:-mervikon-lab}
+      traefik.http.routers.mervikon-conference-attacker.tls: "true"
+      traefik.http.services.mervikon-conference-attacker.loadbalancer.server.port: "8080"
+    extra_hosts:
+      - idp.localtest.me:${TRUSTED_PROXY_IP}
+      - ${CONFERENCE_API_HOST}:${TRUSTED_PROXY_IP}
+  workplace-bff:
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      Evidence__Source: Workplace
+      ConferenceControls__Enabled: "true"
+      ConferenceControls__Origin: ${WORKPLACE_ORIGIN}
+      ConferenceControls__FulfilmentOrigin: ${FULFILMENT_ORIGIN}
+    extra_hosts:
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+    networks:
+      - edge
+      - state
+      - evidence
+  finance-bff:
+    environment:
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      Evidence__Source: Finance
+    networks:
+      - edge
+      - state
+      - evidence
+  procurement-api:
+    environment:
+      ConferenceControls__Enabled: "true"
+      Evidence__Source: Procurement

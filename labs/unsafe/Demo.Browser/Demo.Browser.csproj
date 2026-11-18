@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="ProAuth.Bff" />
+    <PackageReference Include="ProAuth.Oidc.Client.InMemory" />
+    <PackageReference Include="ProAuth.Oidc.Client.AspNetCore" />
+    <ProjectReference Include="../../../src/shared/Common.Evidence/Common.Evidence.csproj" />
+    <Compile Include="../../../src/apps/shared/demo/BffDemoEvidence.cs" Link="Demo/BffDemoEvidence.cs" />
+  </ItemGroup>
+</Project>

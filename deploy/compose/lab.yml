@@ -1,0 +1,153 @@
+# INTENTIONALLY UNSAFE DEMONSTRATION. No lab ports or routes are published.
+services:
+  lab-egress:
+    image: node:26.12.1-alpine
+    profiles:
+      - unsafe-lab
+    user: node
+    command:
+      - node
+      - /app/proxy.mjs
+    volumes:
+      - ../../labs/unsafe/egress/proxy.mjs:/app/proxy.mjs:ro
+    environment:
+      PROAUTH_ISSUER: ${PROAUTH_ISSUER}
+    extra_hosts:
+      - idp.localtest.me:host-gateway
+    networks:
+      - lab-egress-net
+      - edge
+    read_only: true
+    tmpfs: &a1
+      - /tmp
+    security_opt: &a2
+      - no-new-privileges:true
+    cap_drop: &a3
+      - ALL
+  lab-api:
+    image: mervikon/lab-api:local
+    profiles:
+      - unsafe-lab
+    command:
+      - SecurityLab.Api.dll
+    environment:
+      HTTPS_PROXY: http://lab-egress:3128
+      HTTP_PROXY: http://lab-egress:3128
+      NO_PROXY: lab-api,lab-capture,lab-runner,lab-api.localtest.me
+      ResourceServer__Authority: ${PROAUTH_ISSUER}
+      CaptureProxyIp: 172.31.252.3
+    networks:
+      - lab-backend
+      - lab-egress-net
+    read_only: true
+    tmpfs: *a1
+    security_opt: *a2
+    cap_drop: *a3
+  lab-capture:
+    image: mervikon/lab-capture:local
+    profiles:
+      - unsafe-lab
+    command:
+      - SecurityLab.Capture.dll
+    environment:
+      ControlKey: ${LAB_CONTROL_KEY}
+      PublicAuthority: lab-api.localtest.me:8443
+      TlsCertificatePem: ${LAB_TLS_CERTIFICATE_PEM:?Generate lab TLS configuration}
+      TlsPrivateKeyPem: ${LAB_TLS_PRIVATE_KEY_PEM:?Generate lab TLS configuration}
+    networks:
+      lab-front:
+        aliases:
+          - lab-api.localtest.me
+      lab-backend:
+        ipv4_address: 172.31.252.3
+    read_only: true
+    tmpfs: *a1
+    security_opt: *a2
+    cap_drop: *a3
+  lab-runner:
+    image: mervikon/lab-runner:local
+    profiles:
+      - unsafe-lab
+    command:
+      - SecurityLab.Runner.dll
+    environment:
+      ControlKey: ${LAB_CONTROL_KEY}
+      Target: https://lab-api.localtest.me:8443/api/quote
+    networks:
+      - lab-front
+    read_only: true
+    tmpfs: *a1
+    security_opt: *a2
+    cap_drop: *a3
+  lab-victim-bearer:
+    image: mervikon/lab-victim:local
+    profiles:
+      - unsafe-lab
+    command:
+      - SecurityLab.Victim.dll
+    environment:
+      HTTPS_PROXY: http://lab-egress:3128
+      HTTP_PROXY: http://lab-egress:3128
+      NO_PROXY: lab-api,lab-capture,lab-runner,lab-api.localtest.me,demo-console-ingest
+      ControlKey: ${LAB_CONTROL_KEY}
+      Target: https://lab-api.localtest.me:8443/api/quote
+      Authentication__Authority: ${PROAUTH_ISSUER}
+      Authentication__TenantId: ${LAB_TENANT_ID}
+      Authentication__ClientId: ${LAB_BEARER_CLIENT_ID}
+      Authentication__ClientSecret: ${LAB_BEARER_CLIENT_SECRET}
+      Authentication__ClientAuthenticationMethod: ClientSecretBasic
+      Authentication__SenderConstrainedTokenMode: None
+      Authentication__Dpop__GenerateEphemeralKeyWhenMissing: "true"
+      Authentication__Dpop__SigningAlgorithm: PS256
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      RunId: ${CONFERENCE_RUN_ID:-}
+    networks:
+      - lab-front
+      - lab-egress-net
+      - evidence
+    read_only: true
+    tmpfs: *a1
+    security_opt: *a2
+    cap_drop: *a3
+  lab-victim-dpop:
+    image: mervikon/lab-victim:local
+    profiles:
+      - unsafe-lab
+    command:
+      - SecurityLab.Victim.dll
+    environment:
+      HTTPS_PROXY: http://lab-egress:3128
+      HTTP_PROXY: http://lab-egress:3128
+      NO_PROXY: lab-api,lab-capture,lab-runner,lab-api.localtest.me,demo-console-ingest
+      ControlKey: ${LAB_CONTROL_KEY}
+      Target: https://lab-api.localtest.me:8443/api/quote
+      Authentication__Authority: ${PROAUTH_ISSUER}
+      Authentication__TenantId: ${LAB_TENANT_ID}
+      Authentication__ClientId: ${LAB_DPOP_CLIENT_ID}
+      Authentication__ClientSecret: ${LAB_DPOP_CLIENT_SECRET}
+      Authentication__ClientAuthenticationMethod: ClientSecretBasic
+      Authentication__SenderConstrainedTokenMode: Dpop
+      Authentication__Dpop__GenerateEphemeralKeyWhenMissing: "true"
+      Authentication__Dpop__SigningAlgorithm: PS256
+      Evidence__Endpoint: http://demo-console-ingest:8081/observations
+      Evidence__PublisherKey: ${EVIDENCE_PUBLISHER_KEY}
+      RunId: ${CONFERENCE_RUN_ID:-}
+    networks:
+      - lab-front
+      - lab-egress-net
+      - evidence
+    read_only: true
+    tmpfs: *a1
+    security_opt: *a2
+    cap_drop: *a3
+networks:
+  lab-front:
+    internal: true
+  lab-backend:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.31.252.0/24
+  lab-egress-net:
+    internal: true

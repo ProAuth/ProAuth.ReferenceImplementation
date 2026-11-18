@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <ProjectReference Include="../../src/services/Workflow.Domain/Workflow.Domain.csproj" />
+    <ProjectReference Include="../../src/shared/Common.Security/Common.Security.csproj" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <Compile Include="../../src/clients/Demo.MembershipSetup/UserStoreCatalog.cs" Link="UserStoreCatalog.cs" />
+    <Compile Include="../../src/clients/Group.Provisioner/DirectGroup.cs" Link="DirectGroup.cs" />
+    <Compile Include="../../src/apps/shared/AccountSecurityLink.cs" Link="AccountSecurityLink.cs" />
+  </ItemGroup>
+</Project>

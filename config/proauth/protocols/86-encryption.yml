@@ -1,0 +1,50 @@
+# Encrypted access-token lab. The API holds the decryption key; the client receives
+# a token to present, not permission to decrypt it. Encryption does not replace
+# issuer, signature, audience or expiry validation. See ProtocolLab.Api/Program.cs.
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 2a0d4fff-63f8-42af-8b2f-517ec81de121
+spec:
+  name: Mervikon protocol jwe
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  accessTokenType: SelfContainedJwtToken
+  resources:
+    - id: 5697899c-f7eb-4d65-b100-dd12340683a7
+      key: urn:mervikon:protocols
+      name: protocols
+  scopes:
+    - id: 84e489bc-453b-4f02-aa62-4df6bdd0028e
+      key: protocols.quote
+      name: protocols.quote
+  secrets:
+    - id: 836d3848-0c7f-4f54-89dc-ffe9a9f4876e
+      name: Protocol fixture credential
+      secret: '{{env:PROTOCOL_JWE_SECRET}}'
+  accessTokenEncryptionEnabledOverride: true
+  clientAppKeySets:
+    - id: 8804a41f-d403-468e-a79b-0541dd38bf41
+      name: Mervikon protocol encryption
+      sourceType: InlinePublicJwks
+      usage: TokenEncryption
+      status: Active
+      jwksJson: '{{env:PROTOCOL_JWE_PUBLIC_JWKS}}'
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: f44d66b6-e020-4c2b-99d3-b4f9d1d9423d
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 2a0d4fff-63f8-42af-8b2f-517ec81de121
+spec:
+  tokenEndpointAuthMethod: client_secret_basic

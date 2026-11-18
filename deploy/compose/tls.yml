@@ -1,0 +1,61 @@
+tls:
+  certificates:
+    - certFile: /certs/tls.crt
+      keyFile: /certs/tls.key
+  options:
+    default:
+      minVersion: VersionTLS12
+
+# Standalone routing uses the reference services on the private Compose network.
+http:
+  routers:
+    console:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "DEMO_CONSOLE_HOST" }}`)'
+      service: console
+    workplace:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "WORKPLACE_HOST" }}`)'
+      service: workplace
+    procurement:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "PROCUREMENT_HOST" }}`)'
+      service: procurement
+    supplier:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "SUPPLIER_HOST" }}`)'
+      service: supplier
+    finance:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "FINANCE_HOST" }}`)'
+      service: finance
+    fulfilment:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "FULFILMENT_HOST" }}`)'
+      service: fulfilment
+    treasury:
+      entryPoints: [websecure]
+      rule: 'Host(`{{ env "TREASURY_HOST" }}`)'
+      service: treasury
+  services:
+    console:
+      loadBalancer:
+        servers: [{ url: "http://demo-console:8080" }]
+    workplace:
+      loadBalancer:
+        servers: [{ url: "http://workplace-bff:8080" }]
+    procurement:
+      loadBalancer:
+        servers: [{ url: "http://procurement-api:8080" }]
+    supplier:
+      loadBalancer:
+        servers: [{ url: "http://supplier-bff:8080" }]
+    finance:
+      loadBalancer:
+        servers: [{ url: "http://finance-bff:8080" }]
+    fulfilment:
+      loadBalancer:
+        servers: [{ url: "http://fulfilment-api:8080" }]
+    treasury:
+      loadBalancer:
+        servers: [{ url: "http://treasury-api:8080" }]

@@ -62,6 +62,18 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# Distributed by email through the ProAuth whitepaper request form.
+Beyond-the-OAuth-Basics*.pdf
+
+# Generated browser assets, recordings, and workstation metadata
+src/demo-console/DemoConsole/wwwroot/
+/.idea/
+.demoautomation/
+.DS_Store
+src/apps/*/wwwroot/
+.playwright-cli/
+output/playwright/
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -360,3 +372,19 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+## Reference implementation local state and secrets
+.local/
+.env
+.env.*
+*.env
+*.pfx
+*.key
+*.secret
+!.env.example
+!*.env.example
+node_modules/
+dist/
+.venv/
+__pycache__/
+TestResults/
+artifacts/

@@ -1,0 +1,271 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #142f31;
+  background: #f7f8f6;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+a,
+input {
+  font: inherit;
+}
+button,
+a {
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #c6cfcb;
+  padding: 0.65rem 0.9rem;
+  border-radius: 3px;
+}
+button:hover,
+a:hover {
+  background: #e5ede8;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+:focus-visible {
+  outline: 3px solid #167b70;
+  outline-offset: 3px;
+}
+header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #c6cfcb;
+}
+header strong {
+  font-size: 1.6rem;
+  display: block;
+}
+header span {
+  font-size: 0.8rem;
+}
+.tools {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.status {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #173e3a;
+  color: #fff;
+}
+.status button {
+  margin-left: auto;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  min-height: calc(100vh - 165px);
+}
+nav {
+  padding: 1.5rem;
+  border-right: 1px solid #c6cfcb;
+  max-height: calc(100vh - 165px);
+  overflow: auto;
+}
+h2 {
+  font-size: 1rem;
+}
+nav p,
+.notice {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #4f6661;
+}
+nav button {
+  display: block;
+  border: 0;
+  border-bottom: 1px solid #dce2de;
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  margin: 0;
+  padding: 1rem 0.5rem;
+}
+nav button.selected {
+  background: #e0eae4;
+  border-left: 3px solid #167b70;
+}
+small {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.45rem;
+  color: #4f6661;
+}
+main {
+  padding: 2rem 3rem;
+  max-width: 1200px;
+  min-width: 0;
+}
+h1 {
+  font-size: 2.6rem;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  margin: 0.5rem 0 2rem;
+}
+.heading > p {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #c6cfcb;
+  gap: 1.5rem;
+}
+.tabs button {
+  border: 0;
+  border-radius: 0;
+  padding: 1rem 0;
+}
+.tabs [aria-selected='true'] {
+  border-bottom: 3px solid #167b70;
+}
+.result {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  margin: 2rem 0;
+}
+dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1.2rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+dt {
+  color: #4f6661;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.causal {
+  padding-left: 1.3rem;
+  line-height: 1.7;
+}
+.causal li {
+  padding: 0.5rem;
+}
+footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #c6cfcb;
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+}
+.presenter nav {
+  display: none;
+}
+.presenter .workspace {
+  grid-template-columns: 1fr;
+}
+.presenter main {
+  font-size: 1.25rem;
+  margin: auto;
+  max-width: 1400px;
+  width: 100%;
+}
+.presenter dl {
+  font-size: 1.2rem;
+}
+.presenter h1 {
+  font-size: 3.4rem;
+}
+section {
+  animation: arrive 0.15s ease-out;
+}
+button {
+  transition: background 0.12s ease-out;
+}
+@keyframes arrive {
+  from {
+    opacity: 0.65;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (max-width: 900px) {
+  header,
+  .status {
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding: 1rem;
+  }
+  .tools {
+    flex-wrap: wrap;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  nav {
+    max-height: 220px;
+    border-right: 0;
+    border-bottom: 1px solid #c6cfcb;
+  }
+  main {
+    padding: 1.5rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  dl {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  dd {
+    margin-bottom: 0.8rem;
+  }
+  footer {
+    flex-wrap: wrap;
+  }
+}
+
+.workspace[hidden] {
+  display: none;
+}
+.comparison {
+  margin: auto;
+  max-width: 1150px;
+}
+.comparison table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+}
+.comparison th,
+.comparison td {
+  text-align: left;
+  border-bottom: 1px solid #c6cfcb;
+  padding: 1rem;
+}
+.comparison th {
+  font-weight: 500;
+}

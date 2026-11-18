@@ -1,0 +1,39 @@
+@model ProAuth.Bff.Models.LogoutConfirmationViewModel
+@using System.Text.Json
+@{
+    Layout = null;
+    using var catalogue = JsonDocument.Parse(await System.IO.File.ReadAllTextAsync(System.IO.Path.Combine(AppContext.BaseDirectory, "catalogue.json")));
+    var company = catalogue.RootElement.GetProperty("company");
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign out · Finance Desk</title>
+    <link rel="stylesheet" href="@Url.Content("~/mervikon-shell.css")">
+</head>
+<body>
+    <div class="workspace">
+        <aside>
+            <a class="brand" href="@Url.Content("~/")">@company.GetProperty("displayName").GetString()</a>
+            <span class="eyebrow">Finance Desk</span>
+            <p class="fiction">@company.GetProperty("notice").GetString()</p>
+        </aside>
+        <main>
+            <header>Finance Desk</header>
+            <section class="intro">
+                <h1>Sign out</h1>
+                <p>Choose whether to keep your ProAuth session available for other apps or end it when you leave Finance Desk.</p>
+                <form class="step-up-actions" method="post" action="@Model.LogoutAction">
+                    <input type="hidden" name="@Model.AntiforgeryFieldName" value="@Model.AntiforgeryToken">
+                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl">
+                    <button type="submit" name="logoutMode" value="app">Sign out of Finance Desk only</button>
+                    <button type="submit" name="logoutMode" value="sso">Sign out of Finance Desk and ProAuth</button>
+                    <a href="@Model.ReturnUrl">Cancel</a>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

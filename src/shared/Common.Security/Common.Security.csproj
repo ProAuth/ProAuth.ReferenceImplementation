@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ProAuth.Oidc.ResourceServer.AspNetCore" />
+    <PackageReference Include="ProAuth.Oidc.Client" />
+    <ProjectReference Include="../../services/Procurement.Domain/Procurement.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Common.Evidence/Common.Evidence.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../services/Workflow.Domain/Workflow.Domain.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ProAuth.Oidc.Client" />
+    <Content Include="../../../config/proauth/ownership.json" Link="ownership.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

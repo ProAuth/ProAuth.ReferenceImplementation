@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <Compile Include="../../shared/HttpsOrigin.cs" Link="HttpsOrigin.cs" />
+    <ProjectReference Include="../../shared/Common.Security/Common.Security.csproj" />
+    <ProjectReference Include="../Workflow.Domain/Workflow.Domain.csproj" />
+    <PackageReference Include="ProAuth.Oidc.ResourceServer.AspNetCore" />
+    <ProjectReference Include="../Procurement.Domain/Procurement.Domain.csproj" />
+    <Content Include="../../../config/business/catalogue.json" Link="catalogue.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../shared/Common.Evidence/Common.Evidence.csproj" />
+  </ItemGroup>
+</Project>

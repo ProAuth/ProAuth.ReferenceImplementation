@@ -1,0 +1,62 @@
+apiVersion: management.proauth.net/v2
+kind: IdpInstance
+metadata:
+  id: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Mervikon Manufacturing · local training accounts
+  position: 1
+  idpTypeId: "{{idptype:userstore}}"
+  isActive: true
+  autoCreateProAuthUser: true
+  treatSecondFactorClaimsAsConfirmed: false
+  isHidden: false
+  options:
+    - name: ConnectionString
+      value: "{{env:MERVIKON_MANUFACTURING_CONNECTION_STRING}}"
+    - name: CallbackPath
+      value: /signin-mervikon-manufacturing
+    - name: PasskeyEnabled
+      value: true
+---
+apiVersion: management.proauth.net/v2
+kind: IdpInstance
+metadata:
+  id: 1f9c4d3f-da14-46ca-a270-ad310281ade7
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Mervikon Research · local training accounts
+  position: 2
+  idpTypeId: "{{idptype:userstore}}"
+  isActive: true
+  autoCreateProAuthUser: true
+  treatSecondFactorClaimsAsConfirmed: false
+  isHidden: false
+  options:
+    - name: ConnectionString
+      value: "{{env:MERVIKON_RESEARCH_CONNECTION_STRING}}"
+    - name: CallbackPath
+      value: /signin-mervikon-research
+    - name: PasskeyEnabled
+      value: true
+---
+apiVersion: management.proauth.net/v2
+kind: IdpInstance
+metadata:
+  id: 2f447278-d612-4646-9b25-33c8c69d3c8e
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Partner · local training accounts
+  position: 3
+  idpTypeId: "{{idptype:userstore}}"
+  isActive: true
+  autoCreateProAuthUser: true
+  treatSecondFactorClaimsAsConfirmed: false
+  isHidden: false
+  options:
+    - name: ConnectionString
+      value: "{{env:MERVIKON_PARTNERS_CONNECTION_STRING}}"
+    - name: CallbackPath
+      value: /signin-mervikon-partners
+    - name: PasskeyEnabled
+      value: true

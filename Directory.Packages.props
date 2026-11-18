@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="ProAuth.Bff" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.Client" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.Client.AspNetCore" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.Client.InMemory" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.Client.Native" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.Client.Redis" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.ResourceServer.AspNetCore" Version="$(ProAuthPackageVersion)" />
+    <PackageVersion Include="ProAuth.Oidc.ResourceServer.Redis" Version="$(ProAuthPackageVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.4.31" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+</Project>

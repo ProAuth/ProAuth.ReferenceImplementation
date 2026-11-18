@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mervikon · Secure access</title>
+    {% include '_Head' %}
+    {% rendersection 'head' %}
+</head>
+<body class="proauth-body">
+    <script src="/dist/js/auth-intro.js"></script>
+    <div class="proauth-shell">
+        <!-- Brand panel — visible on large screens -->
+        <aside class="proauth-brand-panel" aria-hidden="true">
+            <div class="proauth-brand-orb proauth-brand-orb-1"></div>
+            <div class="proauth-brand-orb proauth-brand-orb-2"></div>
+            <div class="proauth-brand-orb proauth-brand-orb-3"></div>
+
+            <div class="proauth-brand-content proauth-animate-in">
+                <img src="/assets/app/{{ client_app_id }}/mervikon-light.svg" alt="" class="proauth-brand-logo" />
+                <p class="proauth-brand-slogan">Engineering progress.<br>Working together, securely.</p>
+            </div>
+        </aside>
+
+        <!-- Main content area -->
+        <main class="proauth-main">
+            <!-- Top bar -->
+            <header class="proauth-topbar">
+                <div class="proauth-topbar-logo">
+                    <img src="/assets/app/{{ client_app_id }}/mervikon-dark.svg" alt="Mervikon" class="h-8" />
+                </div>
+                <div class="proauth-topbar-actions">
+                    {% language_selector %}
+                </div>
+            </header>
+
+            <!-- Centered form area -->
+            <div class="proauth-content">
+                <div class="proauth-form-container proauth-animate-slide">
+                    {% renderbody %}
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="proauth-footer">
+                <span class="proauth-footer-text">Mervikon Group · Fictional reference company · Identity powered by ProAuth</span>
+            </footer>
+        </main>
+    </div>
+
+    <script src="/dist/js/app.js"></script>
+    {% rendersection 'scripts' %}
+</body>
+</html>

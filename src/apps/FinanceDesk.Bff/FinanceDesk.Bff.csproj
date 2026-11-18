@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <Compile Include="../../shared/HttpsOrigin.cs" Link="HttpsOrigin.cs" />
+    <PackageReference Include="ProAuth.Bff" />
+    <PackageReference Include="ProAuth.Oidc.Client.AspNetCore" />
+    <PackageReference Include="ProAuth.Oidc.Client.Redis" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../../config/business/catalogue.json" Link="catalogue.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../shared/Common.Evidence/Common.Evidence.csproj" />
+    <!-- Demo-only shared adapter; authentication and sessions are configured independently. -->
+    <Compile Include="../shared/demo/BffDemoEvidence.cs" Link="Demo/BffDemoEvidence.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../shared/StepUpEndpoints.cs" Link="StepUpEndpoints.cs" />
+    <EmbeddedResource Include="../Workplace/src/styles.css" LogicalName="Mervikon.AppShell.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../shared/AccountSecurityLink.cs" Link="AccountSecurityLink.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../shared/BffHosting.cs" Link="BffHosting.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,52 @@
+# Isolated stateless replay probe; never scale the in-memory business APIs with this file.
+services:
+  lab-api:
+    environment:
+      ReplayRedis: lab-replay-redis:6379,abortConnect=false,connectTimeout=2000,syncTimeout=2000,asyncTimeout=2000
+      ResourceServer__Dpop__ReplayStore: Custom
+      Instance: one
+    networks:
+      - replay-state
+    depends_on:
+      lab-replay-redis:
+        condition: service_healthy
+  lab-api-replica:
+    extends:
+      file: lab.yml
+      service: lab-api
+    environment:
+      ReplayRedis: lab-replay-redis:6379,abortConnect=false,connectTimeout=2000,syncTimeout=2000,asyncTimeout=2000
+      ResourceServer__Dpop__ReplayStore: Custom
+      Instance: two
+    networks:
+      - replay-state
+    depends_on:
+      lab-replay-redis:
+        condition: service_healthy
+  lab-capture:
+    environment:
+      ReplicaMode: "true"
+  lab-victim-dpop:
+    environment:
+      ReplicaMode: "true"
+  lab-replay-redis:
+    image: ${REDIS_IMAGE:-redis:8.2.11-alpine}
+    user: redis
+    profiles: [unsafe-lab]
+    command: [redis-server, --save, "", --appendonly, "yes", --appendfsync, always, --maxmemory, 16mb, --maxmemory-policy, noeviction]
+    volumes: [lab-replay-state:/data]
+    networks: [replay-state]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 1s
+      retries: 15
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+networks:
+  replay-state:
+    internal: true
+volumes:
+  lab-replay-state:

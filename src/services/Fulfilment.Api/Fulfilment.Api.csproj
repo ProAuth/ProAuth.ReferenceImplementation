@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../../shared/Common.Security/Common.Security.csproj" />
+    <ProjectReference Include="../Workflow.Domain/Workflow.Domain.csproj" />
+  </ItemGroup>
+</Project>

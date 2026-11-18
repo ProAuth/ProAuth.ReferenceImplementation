@@ -1,0 +1,99 @@
+# Deliberately isolated bearer/DPoP capture-and-replay clients. Enable only with the
+# lab deployment profile; their credentials and resource audience are not used by
+# normal business services. See labs/unsafe and docs/security-lab.md.
+# INTENTIONALLY UNSAFE DEMONSTRATION. Dedicated lab-only identities; imported only with --lab.
+apiVersion: management.proauth.net/v2
+kind: Tenant
+metadata:
+  id: 0678aabe-972b-4ead-a4b5-dec55fd5b320
+spec:
+  name: Isolated security lab — intentionally unsafe demonstrations
+  tenantKey: mervikon-lab
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  accessGrantConsent: Inactive
+  logoutConsent: Inactive
+  options:
+    - name: AccessTokenLifetime
+      value: 00:00:30
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: b55c74da-3e28-409f-955e-a7c374cc787f
+spec:
+  name: Security Lab bearer — intentionally unsafe capture
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  subjectType: Public
+  secrets:
+    - id: beee8e71-b1bf-4d11-96d6-537a4399bca2
+      name: Disposable lab only
+      secret: "{{env:LAB_BEARER_CLIENT_SECRET}}"
+  resources:
+    - id: 57ef2f66-2751-4141-b9a6-30bd05e6edf9
+      key: urn:mervikon:lab
+      name: Isolated quote fixture
+  scopes:
+    - id: 8163ce29-a795-478f-ad1e-766178b2b607
+      key: lab.quote
+      name: lab.quote
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: 0678aabe-972b-4ead-a4b5-dec55fd5b320
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: b55c74da-3e28-409f-955e-a7c374cc787f
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: ab9e82e7-742a-4d99-8d6d-529b638954e9
+spec:
+  name: Security Lab dpop — intentionally unsafe capture
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  subjectType: Public
+  secrets:
+    - id: 9c4176ab-cb54-4d7b-a921-a80eeebbb690
+      name: Disposable lab only
+      secret: "{{env:LAB_DPOP_CLIENT_SECRET}}"
+  resources:
+    - id: 9a4319f6-6006-4d34-af2f-1a97ffe7c60b
+      key: urn:mervikon:lab
+      name: Isolated quote fixture
+  scopes:
+    - id: 5401e7ef-059e-47b7-9edd-7f2407fcd364
+      key: lab.quote
+      name: lab.quote
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: 0678aabe-972b-4ead-a4b5-dec55fd5b320
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: ab9e82e7-742a-4d99-8d6d-529b638954e9
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: true

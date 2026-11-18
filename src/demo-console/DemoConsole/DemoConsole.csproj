@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../../shared/Common.Evidence/Common.Evidence.csproj" />
+    <Content Include="../../../docs/scenarios/registry.md" Link="registry.md" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

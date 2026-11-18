@@ -1,0 +1,72 @@
+[
+  {
+    "user": "user-elena",
+    "provider": "idp-manufacturing",
+    "tenant": "tenant-workforce",
+    "Member": {
+      "Id": "elena",
+      "OrganizationId": "buyer-manufacturing",
+      "CostCentre": "engineering",
+      "Roles": [
+        "requester"
+      ],
+      "ApprovalLimitChf": 0
+    }
+  },
+  {
+    "user": "user-amir",
+    "provider": "idp-manufacturing",
+    "tenant": "tenant-workforce",
+    "Member": {
+      "Id": "amir",
+      "OrganizationId": "buyer-manufacturing",
+      "CostCentre": "engineering",
+      "Roles": [
+        "approver"
+      ],
+      "ApprovalLimitChf": 50000
+    }
+  },
+  {
+    "user": "user-sam",
+    "provider": "idp-partners",
+    "tenant": "tenant-partners",
+    "Member": {
+      "Id": "sam",
+      "OrganizationId": "supplier-northstar",
+      "CostCentre": "dispatch",
+      "Roles": [
+        "supplier"
+      ],
+      "ApprovalLimitChf": 0
+    }
+  },
+  {
+    "user": "user-lea",
+    "provider": "idp-partners",
+    "tenant": "tenant-partners",
+    "Member": {
+      "Id": "lea",
+      "OrganizationId": "logistics-alpine",
+      "CostCentre": "zurich",
+      "Roles": [
+        "warehouse"
+      ],
+      "ApprovalLimitChf": 0
+    }
+  },
+  {
+    "user": "user-priya",
+    "provider": "idp-manufacturing",
+    "tenant": "tenant-workforce",
+    "Member": {
+      "Id": "priya",
+      "OrganizationId": "buyer-manufacturing",
+      "CostCentre": "engineering",
+      "Roles": [
+        "finance"
+      ],
+      "ApprovalLimitChf": 50000
+    }
+  }
+]

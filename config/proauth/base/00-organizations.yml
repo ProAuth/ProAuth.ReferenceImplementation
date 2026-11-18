@@ -1,0 +1,46 @@
+apiVersion: management.proauth.net/v2
+kind: Customer
+metadata:
+  id: 841faf25-80e0-4f75-b0c4-80ed9c7939a1
+spec:
+  name: Mervikon Group
+---
+apiVersion: management.proauth.net/v2
+kind: Subscription
+metadata:
+  id: de655bc7-93ce-4b78-9b32-1a7fe819c278
+spec:
+  customerId: 841faf25-80e0-4f75-b0c4-80ed9c7939a1
+  name: Mervikon Applications
+  status: active
+---
+apiVersion: management.proauth.net/v2
+kind: Tenant
+metadata:
+  id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Mervikon workforce
+  accessGrantConsent: Active
+  logoutConsent: Active
+relationships:
+  idpInstances:
+    mode: set
+    refs:
+      - id: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+      - id: 1f9c4d3f-da14-46ca-a270-ad310281ade7
+---
+apiVersion: management.proauth.net/v2
+kind: Tenant
+metadata:
+  id: 77abca30-9cec-4143-9945-4e4e6e5c2293
+spec:
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  name: Mervikon partners
+  accessGrantConsent: Active
+  logoutConsent: Active
+relationships:
+  idpInstances:
+    mode: set
+    refs:
+      - id: 2f447278-d612-4646-9b25-33c8c69d3c8e

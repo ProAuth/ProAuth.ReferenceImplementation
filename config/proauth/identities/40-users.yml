@@ -1,0 +1,104 @@
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: ef2128b9-b8c1-4ca8-a19c-565e1efb5d98
+  userStoreId: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  loginName: elena
+  firstName: Elena
+  lastName: ""
+  emailAddress: elena@manufacturing.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: eed68d77-a0d2-4aad-84bd-95e65cc6e569
+  userStoreId: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  loginName: amir
+  firstName: Amir
+  lastName: ""
+  emailAddress: amir@manufacturing.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: 492830b0-8a75-49b6-a597-e87fe91d34f6
+  userStoreId: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  loginName: priya
+  firstName: Priya
+  lastName: ""
+  emailAddress: priya@manufacturing.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: 86cb4b99-1405-4f33-803b-2ea17f725e4a
+  userStoreId: 1f9c4d3f-da14-46ca-a270-ad310281ade7
+spec:
+  loginName: nina
+  firstName: Nina
+  lastName: ""
+  emailAddress: nina@research.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: e941c62e-b94b-4a49-a886-1be9c9b168c5
+  userStoreId: 2f447278-d612-4646-9b25-33c8c69d3c8e
+spec:
+  loginName: sam
+  firstName: Sam
+  lastName: ""
+  emailAddress: sam@partners.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: e9e1c1ac-4b33-42c7-bf86-e919b633b887
+  userStoreId: 2f447278-d612-4646-9b25-33c8c69d3c8e
+spec:
+  loginName: lea
+  firstName: Lea
+  lastName: ""
+  emailAddress: lea@partners.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true
+---
+apiVersion: userstore.proauth.net/v2
+kind: User
+metadata:
+  id: 688769a3-2c35-42e8-8c07-ccab5183007a
+  userStoreId: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  loginName: jo
+  firstName: Jo
+  lastName: ""
+  emailAddress: jo@manufacturing.example
+  emailAddressConfirmed: false
+  isUserActive: true
+  passwordNeverExpires: false
+  canChangePasswordOnExpiration: true

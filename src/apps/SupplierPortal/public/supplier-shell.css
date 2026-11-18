@@ -1,0 +1,15 @@
+.workspace aside {
+  background: #132c3e;
+}
+.workspace button,
+.workspace .button {
+  background: #235777;
+  border-color: #235777;
+}
+.workspace button:hover:not(:disabled),
+.workspace .button:hover {
+  background: #183f59;
+}
+.workspace :is(a, button):focus-visible {
+  outline-color: #508ab0;
+}

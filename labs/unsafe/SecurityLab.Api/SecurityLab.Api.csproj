@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="ProAuth.Oidc.ResourceServer.AspNetCore" />
+    <PackageReference Include="ProAuth.Oidc.ResourceServer.Redis" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,14 @@
+{
+  "company": { "displayName": "Mervikon Group", "notice": "Fictional company for demonstration and training." },
+  "organizations": [
+    { "id": "buyer-manufacturing", "displayName": "Mervikon Manufacturing" },
+    { "id": "buyer-research", "displayName": "Mervikon Research" },
+    { "id": "supplier-northstar", "displayName": "Northstar Components" },
+    { "id": "logistics-alpine", "displayName": "Alpine Logistics" }
+  ],
+  "products": [
+    { "id": "calibration-station", "name": "Industrial Laser Calibration Station", "priceChf": 18500 },
+    { "id": "coffee-infrastructure", "name": "Mission-Critical Coffee Infrastructure", "priceChf": 24900 },
+    { "id": "office-assistant", "name": "Autonomous Office Assistant Robot", "priceChf": 42000 }
+  ]
+}

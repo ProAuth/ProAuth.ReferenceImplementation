@@ -1,0 +1,85 @@
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: e12c1dc4-19cf-58df-b160-3065a0723d6b
+spec:
+  location: /assets/app/77ec4815-e6d7-4740-bb46-a19146e6f77f/mervikon-light.svg
+  mimetype: image/svg+xml
+  dataFileReference: assets/mervikon-light.svg
+---
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: 9bd525fb-5e36-5de0-a952-67daf4c1a4dc
+spec:
+  location: /assets/app/77ec4815-e6d7-4740-bb46-a19146e6f77f/mervikon-dark.svg
+  mimetype: image/svg+xml
+  dataFileReference: assets/mervikon-dark.svg
+---
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: 55c4b7b0-11c0-5b0e-8d5c-dcec8a2274c1
+spec:
+  location: /assets/app/77ec4815-e6d7-4740-bb46-a19146e6f77f/mervikon.css
+  mimetype: text/css
+  dataFileReference: assets/mervikon.css
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: a46eaf98-c36b-536d-9cb8-6488117a36e1
+spec:
+  location: /Views/app/77ec4815-e6d7-4740-bb46-a19146e6f77f/Shared/_Head.liquid
+  dataFileReference: assets/_Head.liquid
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: b5b31ec6-5dd0-511f-a02d-db6e0dccf198
+spec:
+  location: /Views/app/77ec4815-e6d7-4740-bb46-a19146e6f77f/Shared/_Layout.liquid
+  dataFileReference: assets/_Layout.liquid
+---
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: bae05934-cb37-5df8-bedd-296ff87ed1dd
+spec:
+  location: /assets/app/90983ab9-bd3b-4e77-8dde-6341a8b91fab/mervikon-light.svg
+  mimetype: image/svg+xml
+  dataFileReference: assets/mervikon-light.svg
+---
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: 2be37215-d512-504c-b66f-b032bd192999
+spec:
+  location: /assets/app/90983ab9-bd3b-4e77-8dde-6341a8b91fab/mervikon-dark.svg
+  mimetype: image/svg+xml
+  dataFileReference: assets/mervikon-dark.svg
+---
+apiVersion: management.proauth.net/v2
+kind: CustomAsset
+metadata:
+  id: 80773fa0-7cbf-5e36-9098-ea60e7fc22fa
+spec:
+  location: /assets/app/90983ab9-bd3b-4e77-8dde-6341a8b91fab/mervikon.css
+  mimetype: text/css
+  dataFileReference: assets/mervikon.css
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: de59c677-d19c-58a0-af66-28ec0f0c1c51
+spec:
+  location: /Views/app/90983ab9-bd3b-4e77-8dde-6341a8b91fab/Shared/_Head.liquid
+  dataFileReference: assets/_Head.liquid
+---
+apiVersion: management.proauth.net/v2
+kind: CustomView
+metadata:
+  id: 6fba89b4-2f2d-5426-b51e-94f9a3d5d254
+spec:
+  location: /Views/app/90983ab9-bd3b-4e77-8dde-6341a8b91fab/Shared/_Layout.liquid
+  dataFileReference: assets/_Layout.liquid

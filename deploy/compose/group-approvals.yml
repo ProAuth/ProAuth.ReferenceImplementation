@@ -1,0 +1,11 @@
+# Enable on both sides of the constrained handoff. Only the provisioner writes the second mount.
+services:
+  procurement-api:
+    environment: &approval
+      ApprovalProfile: NativeGroup
+      GroupEligibilityFile: /run/group-approval/eligibility.json
+    volumes: &eligibility
+      - ${GROUP_ELIGIBILITY_DIR:?Dedicated group eligibility output directory}:/run/group-approval:ro
+  fulfilment-api:
+    environment: *approval
+    volumes: *eligibility

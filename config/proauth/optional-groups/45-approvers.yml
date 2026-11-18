@@ -1,0 +1,15 @@
+# Optional native-group eligibility source. Group.Provisioner reads this through a
+# dedicated management identity and publishes a short-lived fact. APIs consume
+# that fact alongside their business assignments; they never hold directory credentials.
+apiVersion: userstore.proauth.net/v2
+kind: Group
+metadata:
+  id: e3f6a094-d2b3-49a3-9035-0250bff203af
+  userStoreId: 2ab9b743-2217-44ff-a2ea-259e0e615b0d
+spec:
+  name: Mervikon purchasing approvers
+relationships:
+  memberUsers:
+    mode: set
+    refs:
+      - id: eed68d77-a0d2-4aad-84bd-95e65cc6e569

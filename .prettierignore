@@ -1,0 +1,13 @@
+node_modules/
+.local/
+.git/
+.playwright-cli/
+output/
+**/bin/
+**/obj/
+**/wwwroot/
+package-lock.json
+**/packages.lock.json
+
+!labs/unsafe/Demo.Browser/wwwroot/
+!labs/unsafe/Demo.Browser/wwwroot/**

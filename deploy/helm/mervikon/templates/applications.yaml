@@ -1,0 +1,97 @@
+{{- $name := printf "%s-mervikon" .Release.Name -}}
+{{- $issuer := required "proauth.issuer must equal the discovery issuer" .Values.proauth.issuer -}}
+{{- $proxy := required "trustedProxyIp must identify the ingress proxy" .Values.trustedProxyIp -}}
+{{- range $app := list "workplace" "procurement" }}
+{{- $settings := index $.Values $app }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-{{ $app }}
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app: {{ $name }}-{{ $app }} }
+  template:
+    metadata:
+      labels: { app: {{ $name }}-{{ $app }}, mervikon-instance: {{ $name }} }
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext: { runAsNonRoot: true, runAsUser: 1654, fsGroup: 1654 }
+      containers:
+        - name: {{ $app }}
+          image: {{ $settings.image | quote }}
+          imagePullPolicy: IfNotPresent
+          ports: [{ name: http, containerPort: 8080 }]
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { cpu: "1", memory: 512Mi }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          livenessProbe: { httpGet: { path: /health/live, port: http, httpHeaders: [{name: Host, value: {{ $settings.host | quote }} }] }, initialDelaySeconds: 20 }
+          env:
+            - { name: AllowedHosts, value: {{ $settings.host | quote }} }
+            {{- if eq $app "workplace" }}
+            - { name: ProAuthBff__AuthenticationSettings__Authority, value: {{ $issuer | quote }} }
+            - { name: ProAuthBff__AuthenticationSettings__ClientId, value: {{ required "proauth.workplaceClientId is required" $.Values.proauth.workplaceClientId | quote }} }
+            - { name: ProAuthBff__AuthenticationSettings__TenantId, value: {{ required "proauth.workforceTenantId is required" $.Values.proauth.workforceTenantId | quote }} }
+            - name: ProAuthBff__AuthenticationSettings__Dpop__JsonWebKey
+              valueFrom:
+                secretKeyRef: { name: {{ $.Values.proauth.existingClientSecret }}, key: workplace-dpop-jwk }
+            - name: ProAuthBff__AuthenticationSettings__ClientSecret
+              valueFrom:
+                secretKeyRef: { name: {{ $.Values.proauth.existingClientSecret }}, key: {{ $.Values.proauth.clientSecretKey }} }
+            - { name: ProAuthBff__ForwardedHeaders__KnownProxies, value: {{ $proxy | quote }} }
+            - name: ProAuthBff__DataProtectionSettings__EncryptionKeys__Certificate
+              valueFrom:
+                secretKeyRef: { name: {{ $.Values.proauth.existingClientSecret }}, key: data-protection-certificate }
+            - name: ProAuthBff__DataProtectionSettings__EncryptionKeys__CertificatePassword
+              valueFrom:
+                secretKeyRef: { name: {{ $.Values.proauth.existingClientSecret }}, key: data-protection-password }
+            - { name: ProAuthBff__Routes__0__Destination, value: {{ printf "https://%s" $.Values.procurement.host | quote }} }
+            {{- range $store := list "Cache" "TicketStore" "DistributedLock" "DataProtection" }}
+            - { name: ProAuthBff__Redis__{{ $store }}__ConnectionString, value: {{ printf "%s-redis:6379" $name | quote }} }
+            {{- end }}
+            {{- else }}
+            - { name: ResourceServer__Authority, value: {{ $issuer | quote }} }
+            - { name: TrustedProxyIp, value: {{ $proxy | quote }} }
+            - { name: MembershipFile, value: /run/mervikon/memberships.json }
+            {{- end }}
+          volumeMounts:
+            - { name: temporary, mountPath: /tmp }
+            {{- if eq $app "procurement" }}
+            - { name: memberships, mountPath: /run/mervikon, readOnly: true }
+            {{- end }}
+      volumes:
+        - { name: temporary, emptyDir: {} }
+        {{- if eq $app "procurement" }}
+        - name: memberships
+          secret: { secretName: {{ $.Values.membershipSecret }}, defaultMode: 288 }
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata: { name: {{ $name }}-{{ $app }} }
+spec:
+  selector: { app: {{ $name }}-{{ $app }} }
+  ports: [{ name: http, port: 80, targetPort: http }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: {{ $name }}-{{ $app }} }
+spec:
+  ingressClassName: {{ $.Values.ingress.className }}
+  tls:
+    - secretName: {{ $.Values.ingress.tlsSecret }}
+      hosts: [{{ $settings.host | quote }}]
+  rules:
+    - host: {{ $settings.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: {{ $name }}-{{ $app }}, port: { name: http } }
+{{- end }}

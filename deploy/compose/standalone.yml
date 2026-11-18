@@ -1,0 +1,88 @@
+# Reserve the trusted proxy address before other services join the edge network.
+x-proxy-started: &proxy-started
+  mervikon-proxy:
+    condition: service_started
+services:
+  mervikon-proxy:
+    image: ${TRAEFIK_IMAGE:-traefik:v3.7.17}
+    command:
+      - --providers.file.filename=/config/tls.yml
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      - --accesslog=false
+      - --api.dashboard=false
+    environment:
+      DEMO_CONSOLE_HOST: ${DEMO_CONSOLE_HOST:-democonsole.localtest.me}
+      WORKPLACE_HOST: ${WORKPLACE_HOST:?Set WORKPLACE_HOST}
+      PROCUREMENT_HOST: ${PROCUREMENT_HOST:?Set PROCUREMENT_HOST}
+      SUPPLIER_HOST: ${SUPPLIER_HOST:?Set SUPPLIER_HOST}
+      FINANCE_HOST: ${FINANCE_HOST:?Set FINANCE_HOST}
+      FULFILMENT_HOST: ${FULFILMENT_HOST:?Set FULFILMENT_HOST}
+      TREASURY_HOST: ${TREASURY_HOST:?Set TREASURY_HOST}
+    ports:
+      - 127.0.0.1:443:443
+    volumes:
+      - ./tls.yml:/config/tls.yml:ro
+      - ${TLS_CERT_FILE:?Set TLS_CERT_FILE}:/certs/tls.crt:ro
+      - ${TLS_KEY_FILE:?Set TLS_KEY_FILE}:/certs/tls.key:ro
+    networks:
+      edge:
+        ipv4_address: ${TRUSTED_PROXY_IP}
+    security_opt:
+      - no-new-privileges:true
+  demo-console:
+    depends_on: *proxy-started
+    labels:
+      traefik.enable: "false"
+  workplace-bff:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${PROCUREMENT_HOST}:${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "false"
+  procurement-api:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "false"
+  supplier-bff:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "false"
+  finance-bff:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${TREASURY_HOST}:${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "false"
+  fulfilment-api:
+    depends_on: *proxy-started
+    labels:
+      traefik.enable: "false"
+  treasury-api:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+    labels:
+      traefik.enable: "false"
+  warehouse-terminal:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+  dispatch-worker:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${FULFILMENT_HOST}:${TRUSTED_PROXY_IP}
+  reconciliation-worker:
+    depends_on: *proxy-started
+    extra_hosts: !override
+      - ${TREASURY_HOST}:${TRUSTED_PROXY_IP}
+networks:
+  edge:
+    external: false
+    ipam:
+      config:
+        - subnet: ${MERVIKON_EDGE_SUBNET:-172.31.251.0/24}

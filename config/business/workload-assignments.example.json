@@ -1,0 +1,38 @@
+{
+  "Memberships": [],
+  "Workloads": [
+    {
+      "Issuer": "EXACT_DISCOVERY_ISSUER",
+      "TenantId": "77abca30-9cec-4143-9945-4e4e6e5c2293",
+      "ClientId": "e5c0dd35-9ed9-4a41-9ef0-bbd204e3dc2b",
+      "Partitions": [
+        {
+          "OrganizationId": "buyer-manufacturing",
+          "CostCentre": "engineering"
+        }
+      ]
+    },
+    {
+      "Issuer": "EXACT_DISCOVERY_ISSUER",
+      "TenantId": "e428f9e9-fb58-47a6-8de4-e66f09f382df",
+      "ClientId": "ca63084e-4f9f-4b20-97d6-dd993f134faa",
+      "Partitions": [
+        {
+          "OrganizationId": "buyer-manufacturing",
+          "CostCentre": "engineering"
+        }
+      ]
+    },
+    {
+      "Issuer": "EXACT_DISCOVERY_ISSUER",
+      "TenantId": "e428f9e9-fb58-47a6-8de4-e66f09f382df",
+      "ClientId": "eb48362b-39bf-4a57-b83a-1f53a82abc6d",
+      "Partitions": [
+        {
+          "OrganizationId": "buyer-manufacturing",
+          "CostCentre": "engineering"
+        }
+      ]
+    }
+  ]
+}

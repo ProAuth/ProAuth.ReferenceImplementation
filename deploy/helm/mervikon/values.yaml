@@ -1,0 +1,22 @@
+workplace:
+  image: mervikon/workplace-bff:local
+  host: workplace.demo.proauth.net
+procurement:
+  image: mervikon/procurement-api:local
+  host: procurement.demo.proauth.net
+proauth:
+  issuer: ""
+  workplaceClientId: ""
+  workforceTenantId: ""
+  existingClientSecret: mervikon-workplace-client
+  clientSecretKey: client-secret
+trustedProxyIp: ""
+membershipSecret: mervikon-memberships
+ingress:
+  className: traefik
+  tlsSecret: mervikon-tls
+redis:
+  image: redis:8.2.11-alpine
+  storage: 1Gi
+imagePullSecrets: []
+# Deploy Workplace and Procurement in a private namespace.

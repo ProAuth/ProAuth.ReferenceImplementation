@@ -1,0 +1,37 @@
+# Local-only probe routing. No sticky sessions; both replicas share the existing
+# Workplace encrypted keys, session tickets containing tokens and refresh locks.
+services:
+  workplace-bff:
+    environment:
+      ReplicaLab__Instance: one
+    labels:
+      traefik.http.routers.mervikon-workplace.service: mervikon-workplace
+      traefik.http.routers.mervikon-workplace.priority: "10"
+      traefik.http.routers.mervikon-workplace-one.rule: Host(`${WORKPLACE_HOST}`) && Header(`X-Mervikon-Bff-Replica`, `one`)
+      traefik.http.routers.mervikon-workplace-one.entrypoints: websecure
+      traefik.http.routers.mervikon-workplace-one.tls: "true"
+      traefik.http.routers.mervikon-workplace-one.priority: "200"
+      traefik.http.routers.mervikon-workplace-one.service: mervikon-workplace-one
+      traefik.http.services.mervikon-workplace-one.loadbalancer.server.port: "8080"
+  workplace-bff-replica:
+    extends:
+      file: compose.yml
+      service: workplace-bff
+    profiles: [bff-replicas]
+    environment:
+      ReplicaLab__Instance: two
+    labels: !override
+      traefik.enable: "true"
+      traefik.docker.network: ${MERVIKON_EDGE_NETWORK}
+      traefik.http.routers.mervikon-workplace.rule: Host(`${WORKPLACE_HOST}`)
+      traefik.http.routers.mervikon-workplace.entrypoints: websecure
+      traefik.http.routers.mervikon-workplace.tls: "true"
+      traefik.http.routers.mervikon-workplace.service: mervikon-workplace
+      traefik.http.routers.mervikon-workplace.priority: "10"
+      traefik.http.services.mervikon-workplace.loadbalancer.server.port: "8080"
+      traefik.http.routers.mervikon-workplace-two.rule: Host(`${WORKPLACE_HOST}`) && Header(`X-Mervikon-Bff-Replica`, `two`)
+      traefik.http.routers.mervikon-workplace-two.entrypoints: websecure
+      traefik.http.routers.mervikon-workplace-two.tls: "true"
+      traefik.http.routers.mervikon-workplace-two.priority: "200"
+      traefik.http.routers.mervikon-workplace-two.service: mervikon-workplace-two
+      traefik.http.services.mervikon-workplace-two.loadbalancer.server.port: "8080"

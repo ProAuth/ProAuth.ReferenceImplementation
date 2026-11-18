@@ -1,0 +1,351 @@
+# Business journey registrations. Read with each host's Program.cs and appsettings.json:
+# - Supplier Portal: confidential BFF, PAR and bearer access to Fulfilment.
+# - Finance Desk: PAR, private_key_jwt and DPoP under the configured FAPI profile.
+# - Procurement: delegated token exchange into Fulfilment's create-only capability.
+# - Dispatch, receipt reading and reconciliation: separate client-credentials identities.
+# OAuth grants do not define business partitions; config/business and Memberships do.
+# Keep audience/scope values aligned on issuer, client request and receiving API.
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 4cae1e8b-31bb-4b92-b59f-e0cffc95626f
+spec:
+  name: Supplier Portal
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  secrets:
+    - id: b0ece8e7-6582-42aa-9a4e-0673e5505359
+      name: Application credential
+      secret: "{{env:SUPPLIER_CLIENT_SECRET}}"
+  resources:
+    - id: 3065bb77-9078-40e5-a989-1895276a7f2f
+      key: urn:mervikon:fulfilment
+      name: fulfilment
+  scopes:
+    - id: 1c861603-b9ed-4139-aafe-c9f15f183113
+      key: openid
+      name: openid
+    - id: 0b91b1c4-385f-48d7-a022-cfe15a4c272a
+      key: profile
+      name: profile
+    - id: aecfab7c-dafb-440f-ae31-487cb6cd9e4e
+      key: offline_access
+      name: offline_access
+    - id: 2385f129-20b1-4b75-981f-27947cc2838a
+      key: fulfilment.read
+      name: fulfilment.read
+    - id: cfecb4ae-1709-4be2-80d4-2d494fdd8bad
+      key: fulfilment.write
+      name: fulfilment.write
+  # Send authorization parameters directly to ProAuth before browser navigation.
+  requirePushedAuthorizationRequests: true
+  backchannelLogoutUri: "{{env:SUPPLIER_ORIGIN}}/bff/backchannel-logout"
+  backchannelLogoutSessionRequired: true
+  redirectUris:
+    - id: bcede44d-a5f2-4c68-8afa-efa102d7a22f
+      uri: "{{env:SUPPLIER_ORIGIN}}/signin-oidc"
+      redirectType: RedirectUri
+    - id: 0d80c778-3861-4ee3-bb45-029aa6c3f1b0
+      uri: "{{env:SUPPLIER_ORIGIN}}/signout-callback-oidc"
+      redirectType: LogoutRedirectUri
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: 77abca30-9cec-4143-9945-4e4e6e5c2293
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 4cae1e8b-31bb-4b92-b59f-e0cffc95626f
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 90983ab9-bd3b-4e77-8dde-6341a8b91fab
+spec:
+  name: Finance Desk
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  resources:
+    - id: ab9fbe5f-619f-48cc-9978-6431eb041989
+      key: urn:mervikon:treasury
+      name: treasury
+  scopes:
+    - id: bea7c26d-f1c3-49e5-85ff-85bdb05f1411
+      key: openid
+      name: openid
+    - id: 85bba862-26b7-428b-95d7-9f1c5c67a721
+      key: profile
+      name: profile
+    - id: 9b05d34e-d632-45dc-9b35-54d11ed68b54
+      key: offline_access
+      name: offline_access
+    - id: 182094ac-96b9-496a-8131-7894f56adc3a
+      key: treasury.read
+      name: treasury.read
+    - id: f3d4aa92-4dc3-4ca7-abb0-c1fab1972de7
+      key: treasury.write
+      name: treasury.write
+  # Send authorization parameters directly to ProAuth before browser navigation.
+  requirePushedAuthorizationRequests: true
+  backchannelLogoutUri: "{{env:FINANCE_ORIGIN}}/bff/backchannel-logout"
+  backchannelLogoutSessionRequired: true
+  redirectUris:
+    - id: 1f58f8ce-a8b1-4c5f-8db6-ae410e753784
+      uri: "{{env:FINANCE_ORIGIN}}/signin-oidc"
+      redirectType: RedirectUri
+    - id: deb6aef8-358c-4c90-bf73-529ac78cc730
+      uri: "{{env:FINANCE_ORIGIN}}/signout-callback-oidc"
+      redirectType: LogoutRedirectUri
+  securityProfile: Fapi2Security
+  clientAppKeySets:
+    - id: ffc4545a-cd4a-4cb7-9806-16ca47e79d2f
+      name: Finance client assertion key
+      sourceType: InlinePublicJwks
+      usage: ClientAssertionSigning
+      status: Active
+      jwksJson: '{{env:FINANCE_ASSERTION_PUBLIC_JWKS}}'
+  authenticationAssurancePolicies:
+    - id: d9c25fa8-cfa4-44cd-a8e7-408f1de1c2fb
+      name: assurance-finance-treasury
+      tenantId: e428f9e9-fb58-47a6-8de4-e66f09f382df
+      audience: urn:mervikon:treasury
+      mode: StepUp
+      includeAuthenticationMethods: false
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 90983ab9-bd3b-4e77-8dde-6341a8b91fab
+spec:
+  # Client authentication proves which confidential application calls the token endpoint.
+  # It is independent of DPoP possession and of the human user's authentication strength.
+  tokenEndpointAuthMethod: private_key_jwt
+  # Bind issued tokens to the sender key. The receiving API must validate the request proof.
+  dpopBoundAccessTokens: true
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: 76bc9abe-8333-4f4a-badf-bb7c4b4bc1d1
+spec:
+  name: Procurement exchange
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  secrets:
+    - id: 6254577d-aa10-4dc7-a522-417a43e13136
+      name: Application credential
+      secret: "{{env:PROCUREMENT_EXCHANGE_CLIENT_SECRET}}"
+  resources:
+    - id: 0c5929a1-6b32-478d-86ac-d7b00a23de8a
+      key: urn:mervikon:fulfilment
+      name: fulfilment
+  scopes:
+    - id: e3559c20-8d19-46c8-915b-0431f33f7f5b
+      key: fulfilment.create
+      name: fulfilment.create
+  metadata:
+    - key: tokenexchangeenabled
+      value: "true"
+  tokenExchangePolicies:
+    - id: f46c7b1e-f4fa-479a-b9ea-53a52c14261b
+      name: Validated Workplace request to Fulfilment
+      enabled: true
+      allowRefreshTokens: false
+      tenantId: e428f9e9-fb58-47a6-8de4-e66f09f382df
+      sourceClientAppId: 77ec4815-e6d7-4740-bb46-a19146e6f77f
+      inputAudience: urn:mervikon:procurement
+      requiredInputScopes: procurement.write
+      inputBinding: Dpop
+      outputAudience: urn:mervikon:fulfilment
+      allowedOutputScopes: fulfilment.create
+      outputBinding: Dpop
+      maximumLifetimeSeconds: 120
+  authenticationAssurancePolicies:
+    - id: 3d6062be-eb27-464e-a997-094e491050e5
+      name: assurance-exchange-fulfilment
+      tenantId: e428f9e9-fb58-47a6-8de4-e66f09f382df
+      audience: urn:mervikon:fulfilment
+      mode: EvidenceOnly
+      includeAuthenticationMethods: false
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+  allowedTokenExchangeClientApps:
+    mode: set
+    refs:
+      - id: 77ec4815-e6d7-4740-bb46-a19146e6f77f
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: 76bc9abe-8333-4f4a-badf-bb7c4b4bc1d1
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  # Bind issued tokens to the sender key. The receiving API must validate the request proof.
+  dpopBoundAccessTokens: true
+  tokenExchangeMode: Policy
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: ca63084e-4f9f-4b20-97d6-dd993f134faa
+spec:
+  name: Treasury receipt reader
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  secrets:
+    - id: e49a8767-154a-4d1f-8a96-db0ea5b53f35
+      name: Application credential
+      secret: "{{env:TREASURY_READER_CLIENT_SECRET}}"
+  resources:
+    - id: 9db8e6a5-7196-4c8a-b6cd-ffa428bd6ff4
+      key: urn:mervikon:fulfilment
+      name: fulfilment
+  scopes:
+    - id: a123f324-d4af-4814-83cc-6bedc792b013
+      key: fulfilment.reconcile
+      name: fulfilment.reconcile
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: ca63084e-4f9f-4b20-97d6-dd993f134faa
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: eb48362b-39bf-4a57-b83a-1f53a82abc6d
+spec:
+  name: Reconciliation worker
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  secrets:
+    - id: d31625d6-f61f-402b-8f6d-8b9699362c87
+      name: Application credential
+      secret: "{{env:RECONCILIATION_CLIENT_SECRET}}"
+  resources:
+    - id: 42a4b2de-2026-4fcc-9dd6-b4fdfaea0a51
+      key: urn:mervikon:treasury
+      name: treasury
+  scopes:
+    - id: e5bb3785-17b0-4512-9fa3-a9a56ccfc7ba
+      key: treasury.reconcile
+      name: treasury.reconcile
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: e428f9e9-fb58-47a6-8de4-e66f09f382df
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: eb48362b-39bf-4a57-b83a-1f53a82abc6d
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false
+---
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: e5c0dd35-9ed9-4a41-9ef0-bbd204e3dc2b
+spec:
+  name: Supplier dispatch integration
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: false
+  allowUserLogin: false
+  allowClientCredentialLogin: true
+  allowCrossSubscription: false
+  allowedResponseTypes: code
+  subjectType: Public
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  secrets:
+    - id: 47efac2e-f5f6-4f5d-9baf-08c35ecc2fa3
+      name: Application credential
+      secret: "{{env:DISPATCH_CLIENT_SECRET}}"
+  resources:
+    - id: 6bd85923-e807-400b-afab-cc3f1504a0fd
+      key: urn:mervikon:fulfilment
+      name: fulfilment
+  scopes:
+    - id: 91f0b726-08f5-489b-a59d-9a1102b65b47
+      key: fulfilment.read
+      name: fulfilment.read
+    - id: 8eba02e9-1f89-47f8-a266-05033ef7b8af
+      key: fulfilment.write
+      name: fulfilment.write
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: 77abca30-9cec-4143-9945-4e4e6e5c2293
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: e5c0dd35-9ed9-4a41-9ef0-bbd204e3dc2b
+spec:
+  tokenEndpointAuthMethod: client_secret_basic
+  dpopBoundAccessTokens: false

@@ -1,0 +1,212 @@
+:root {
+  font: 20px system-ui;
+  color: #e6edf7;
+  background: #101827;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.1rem 2rem;
+  background: #1e2b40;
+}
+header span,
+header a {
+  font-size: 0.75rem;
+  color: #b4c4d9;
+}
+header a {
+  margin-left: auto;
+}
+main {
+  max-width: 1660px;
+  padding: 1.5rem 2rem;
+  margin: auto;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.eyebrow {
+  color: #8dbaff;
+  letter-spacing: 0.12em;
+  font-size: 0.65rem;
+  margin: 0;
+}
+h1 {
+  font-size: 2rem;
+  margin: 0.4rem 0;
+}
+h2 {
+  font-size: 1rem;
+  margin: 0.4rem 0 1rem;
+}
+nav {
+  display: flex;
+  gap: 0.5rem;
+}
+button {
+  font: inherit;
+  font-size: 0.8rem;
+  border: 1px solid #53657f;
+  color: inherit;
+  background: transparent;
+  border-radius: 4px;
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+button[aria-pressed='true'],
+button.current {
+  background: #234e7c;
+  border-color: #8dbaff;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #8dbaff;
+  outline-offset: 3px;
+}
+#context {
+  font-size: 0.85rem;
+  color: #b4c4d9;
+  min-height: 1.4rem;
+}
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-top: 1px solid #33445e;
+  border-bottom: 1px solid #33445e;
+  padding: 1rem 0;
+  margin: 1rem 0 1.5rem;
+  font-size: 1.1rem;
+}
+.flow b {
+  color: #8dbaff;
+}
+.flow strong {
+  margin-left: auto;
+  font-size: 1.3rem;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 3rem;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.steps button {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  text-align: left;
+  padding: 0.75rem;
+}
+.steps b {
+  font-size: 1.4rem;
+  color: #8dbaff;
+  font-weight: 400;
+}
+.steps small {
+  display: block;
+  color: #b4c4d9;
+  font-size: 0.7rem;
+  margin-top: 0.3rem;
+}
+.inspector-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.inspector-heading h2 {
+  margin: 0;
+}
+#provenance,
+.caption,
+footer {
+  font-size: 0.65rem;
+  color: #b4c4d9;
+}
+pre {
+  margin: 0.5rem 0;
+  min-height: 17rem;
+  font:
+    0.8rem/1.35 ui-monospace,
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1rem;
+  background: #19263b;
+}
+#progress {
+  font-size: 0.75rem;
+  color: #8dbaff;
+}
+#history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#history li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #33445e;
+  font-size: 0.75rem;
+}
+#history small {
+  font-size: 0.65rem;
+  color: #b4c4d9;
+}
+footer {
+  margin-top: 1.2rem;
+  border-top: 1px solid #33445e;
+  padding-top: 1rem;
+}
+#error {
+  color: #ffc878;
+}
+@media (max-width: 1000px) {
+  .heading {
+    display: block;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .flow {
+    gap: 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .flow strong {
+    animation: appear 0.2s ease-out;
+  }
+  @keyframes appear {
+    from {
+      opacity: 0.4;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

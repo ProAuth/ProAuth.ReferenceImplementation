@@ -1,0 +1,47 @@
+# Public warehouse terminal using device authorization. The person authorizes in a
+# browser at ProAuth; the terminal never receives a password or a client secret.
+# This path intentionally issues bearer tokens. Fulfilment narrows access to the
+# warehouse client, receive scope and the person's current warehouse assignment.
+apiVersion: management.proauth.net/v2
+kind: ClientApp
+metadata:
+  id: db38a3b6-ab09-44cb-9f11-e501bfd2b704
+spec:
+  name: Warehouse terminal
+  subscriptionId: de655bc7-93ce-4b78-9b32-1a7fe819c278
+  enabled: true
+  isPublic: true
+  allowUserLogin: true
+  allowClientCredentialLogin: false
+  allowDeviceAuthorizationGrant: true
+  allowCrossSubscription: false
+  scopeFilterEnabled: true
+  resourceFilterEnabled: true
+  subjectType: Public
+  resources:
+    - id: b6206d0b-cb9d-4085-a424-e7041f547be3
+      key: urn:mervikon:fulfilment
+      name: Fulfilment API
+  scopes:
+    - id: b8896070-bd86-49a6-bb16-a2fea09b12bf
+      key: openid
+      name: openid
+    - id: dd0ab454-aa84-4a0c-9c76-c7f93d86811c
+      key: fulfilment.read
+      name: fulfilment.read
+    - id: 121cd0b9-9a2c-4319-ab0b-0341dc37d36a
+      key: fulfilment.receive
+      name: fulfilment.receive
+relationships:
+  tenants:
+    mode: set
+    refs:
+      - id: 77abca30-9cec-4143-9945-4e4e6e5c2293
+---
+apiVersion: management.proauth.net/v2
+kind: ClientAppAuthenticationConfiguration
+metadata:
+  id: db38a3b6-ab09-44cb-9f11-e501bfd2b704
+spec:
+  tokenEndpointAuthMethod: none
+  dpopBoundAccessTokens: false
